@@ -1,0 +1,73 @@
+# To run Docker Compose:
+# $ docker compose up --build
+
+# Contains a list of abstract-multi-containers
+services:
+  postgres:
+    image: postgres:18
+    container_name: foodhub
+
+    # Points to .env variables
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - postgres_data:/var/lib/postgresql
+
+  kafka:
+      image: apache/kafka:4.1.1
+      container_name: kafka_foodhub
+      ports:
+        # host -> kafka (for tools running on your laptop)
+        - "29092:29092"
+      volumes:
+        - kafka_data:/bitnami
+      environment:
+        KAFKA_NODE_ID: "1"
+        KAFKA_PROCESS_ROLES: "broker,controller"
+        KAFKA_CONTROLLER_QUORUM_VOTERS: "1@kafka:9093"
+        KAFKA_LISTENERS: "PLAINTEXT://:9092,CONTROLLER://:9093"
+        KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka:9092"
+        KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT"
+        KAFKA_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
+        KAFKA_INTER_BROKER_LISTENER_NAME: "PLAINTEXT"
+        KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: "1"
+        KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: "1"
+        KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: "1"
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui_foodhub
+    ports:
+      - "8080:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+    depends_on:
+      - kafka      # condition -> service_started
+
+  #consumer:
+  #  build: .
+  #  env_file:
+  #    - .env
+  #  depends_on:
+  #    - kafka
+  #  command: [ "uv", "run", "python", "-u", "app/consumer/print.py" ]  
+
+  app:
+    build: .  # searches for Dockerfile (creates image)
+    env_file:
+      - .env
+    depends_on:
+      postgres:
+        condition: service_started
+      kafka:
+        condition: service_started
+    ports:
+      - "8000:8000"
+
+# Make PostgreSQL stateful
+volumes:
+  postgres_data:
+  kafka_data: # Is this truly necessary?
