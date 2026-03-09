@@ -11,7 +11,9 @@ print("\nDtypes:")
 print(recipes_df.dtypes)
 
 ####### Title #######
-recipes_df["title"] = recipes_df["title"].str.upper()
+
+recipes_df["title"] = recipes_df["title"].str.replace(r"\s+", " ", regex=True).str.title()
+
 
 ###### Cooking time #######
 recipes_df["cooking_minutes"] = pd.to_numeric(recipes_df["cooking_minutes"], errors="coerce")
@@ -26,3 +28,17 @@ print(recipes_df["image"])
 recipes_df["image"] = recipes_df["image"].replace("", None)
 
 print(recipes_df["image"])
+
+####### Ingredients #######
+"""print(recipes_df["ingredients"])
+recipes_df["ingredients"] = recipes_df["ingredients"].replace("", None)
+recipes_df["ingredients"] = recipes_df["ingredients"].str.strip()
+recipes_df["ingredients"] = recipes_df["ingredients"].str.title()
+
+print(recipes_df["ingredients"])"""
+
+
+####### Instructions ########
+
+recipes_df.to_csv("cleaning_recipe.csv", index=False)
+
