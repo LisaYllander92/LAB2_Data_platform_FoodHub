@@ -61,4 +61,4 @@ recipes_df["instructions"] = recipes_df["instructions"].apply(capitalize_sentenc
 recipes_df["allergies"] = recipes_df["allergies"].apply(lambda x: list(set(i.lower().strip() for i in x))if isinstance(x, list) else x)
 
 
-recipes_df.to_json("cleaning_recipe.json", index=False, indent=2)
+recipes_df.to_json("cleaning_recipe.json", orient= "records", indent=2)
