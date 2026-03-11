@@ -10,11 +10,11 @@ def get_flag_reason(row):
     reasons = []
 
     if pd.isna(row["cooking_minutes"]):
-        reasons.append(f"Ogiltig tillagningstid: '{row['cooking_minutes']}'")
+        reasons.append(f"Invalid cooking time: '{row['cooking_minutes']}'")
     if pd.notna(row["cooking_minutes"]) and (row["cooking_minutes"] <= 0 or row["cooking_minutes"] > 600):
-        reasons.append(f"Orimlig tillagningstid: {row['cooking_minutes']} min")
+        reasons.append(f"Unreasonable cooking time: {row['cooking_minutes']} min")
     if pd.notna(row["servings"]) and (row["servings"] <= 0 or row["servings"] > 100):
-        reasons.append(f"Orimligt antal portioner: {row['servings']}")
+        reasons.append(f"Unreasonable number of potions: {row['servings']}")
 
     return reasons if reasons else None
 
