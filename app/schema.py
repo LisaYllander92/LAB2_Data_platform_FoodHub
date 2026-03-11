@@ -1,5 +1,6 @@
-from pydantic import BaseModel
-from typing import Optional, List
+from pydantic import BaseModel, field_validator
+from typing import Optional, List, Any
+
 
 class FoodData(BaseModel):
     id: int
@@ -11,4 +12,9 @@ class FoodData(BaseModel):
     instructions: Optional[str] = None
     allergies: Optional[List[str]] = None
 
-
+    @field_validator("cooking_minutes", "servings", mode="before")
+    @classmethod
+    def replace_empty_with_zero(cls, v: Any) -> int:
+        if v is None or v == "":
+            return 0
+        return v
