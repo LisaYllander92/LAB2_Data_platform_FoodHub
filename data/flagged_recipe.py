@@ -4,7 +4,6 @@ from app.schema import FoodData
 
 df = pd.read_json("cleaning_recipe.json")
 flagged_df = df.copy()
-flagged_df['cooking_minutes']
 
 def get_flag_reason(row):
     reasons = []
@@ -20,13 +19,13 @@ def get_flag_reason(row):
 
 wrong_minutes_condition = (
     (flagged_df["cooking_minutes"] < 0) |
-    (flagged_df["cooking_minutes"] > 10000) |
+    (flagged_df["cooking_minutes"] > 600) |
     ((flagged_df["cooking_minutes"] == 0) & flagged_df["cooking_minutes"].notna())
 )
 
 wrong_serving_condition = (
     (flagged_df["servings"] < 0) |
-    (flagged_df["servings"] > 10000) |
+    (flagged_df["servings"] > 100) |
     (flagged_df["servings"] == 0)
     & flagged_df["servings"].notna()
 )
@@ -38,14 +37,8 @@ flagged_df["is_flagged"] = (
 
 flagged_dataframe = flagged_df[flagged_df["is_flagged"] == True]
 
-
 flagged_dataframe["flag_reasons"] = flagged_dataframe.apply(get_flag_reason, axis=1)
 flagged_dataframe.to_json("flagged_values.json", orient= "records", indent=2)
-
-
-
-
-
 
 
 
