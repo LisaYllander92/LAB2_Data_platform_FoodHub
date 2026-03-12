@@ -1,0 +1,102 @@
+[
+  {
+    "id":1,
+    "title":"Spaghetti Bolognese",
+    "image":"https:\/\/example.com\/spag_bolo.jpg",
+    "cooking_minutes":30,
+    "ingredients":[
+      "200g spaghetti",
+      "100 g minced beef",
+      "1 onion",
+      "2 cloves garlic",
+      "1 can tomato sauce",
+      "olive oil",
+      "salt",
+      "pepper"
+    ],
+    "servings":2,
+    "instructions":"Boil spaghetti. Fry beef with onion and garlic. Add tomato sauce. Mix together. ",
+    "allergies":[
+      "gluten"
+    ]
+  },
+  {
+    "id":2,
+    "title":"Kyckling Curry",
+    "image":null,
+    "cooking_minutes":25,
+    "ingredients":[
+      "2 chicken breast",
+      "1 tbsp curry paste",
+      "200ml coconut milk",
+      "1 onion",
+      "rice",
+      "salt"
+    ],
+    "servings":3,
+    "instructions":"Cut chicken. Fry onion. Add curry paste and coconut milk then simmer. ",
+    "allergies":[
+      "nuts"
+    ]
+  },
+  {
+    "id":3,
+    "title":"Veggie Tacos ",
+    "image":"https:\/\/example.com\/tacos.png",
+    "cooking_minutes":20,
+    "ingredients":[
+      "4 taco shells",
+      "1 can black beans",
+      "lettuce",
+      "tomato",
+      "cheddar cheese",
+      "salsa",
+      "avocado"
+    ],
+    "servings":4,
+    "instructions":"Heat beans. Fill taco shells with beans and vegetables. ",
+    "allergies":[
+      "dairy",
+      "gluten"
+    ]
+  },
+  {
+    "id":4,
+    "title":"Pancakes",
+    "image":"https:\/\/example.com\/pancakes.jpg",
+    "cooking_minutes":0,
+    "ingredients":[
+      "2 eggs",
+      "200 ml milk",
+      "100g flour",
+      "1 tbsp sugar",
+      "butter"
+    ],
+    "servings":2,
+    "instructions":"Mix ingredients. Fry small pancakes in butter. ",
+    "allergies":[
+      "gluten",
+      "dairy",
+      "egg"
+    ]
+  },
+  {
+    "id":5,
+    "title":"Tomato Soup",
+    "image":null,
+    "cooking_minutes":15,
+    "ingredients":[
+      "3 tomatoes",
+      "1 onion",
+      "1 vegetable broth cube",
+      "500 ml water",
+      "cream",
+      "salt"
+    ],
+    "servings":0,
+    "instructions":"Boil tomatoes and onion. Blend. Add cream and season. ",
+    "allergies":[
+      "dairy"
+    ]
+  }
+]
