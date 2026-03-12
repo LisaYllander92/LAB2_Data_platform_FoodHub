@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS staging_recipes (
+    id SERIAL PRIMARY KEY,
+    raw_data TEXT NOT NULL,
+    ingested_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

@@ -15,6 +15,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
       - postgres_data:/var/lib/postgresql
 
   kafka:
@@ -54,7 +55,7 @@ services:
     container_name: kafka-init_foodhub
     depends_on:
       - kafka
-    entrypoint: ["/bin/sh", "-c", "sleep 5 && /opt/kafka/bin/kafka-topics.sh --create --if-not-exists --bootstrap-server kafka:9092 --topic ingredients --partitions 1 --replication-factor 1"]
+    entrypoint: ["/bin/sh", "-c", "sleep 5 && /opt/kafka/bin/kafka-topics.sh --create --if-not-exists --bootstrap-server kafka:9092 --topic recipe-result --partitions 1 --replication-factor 1"]
 
   #consumer:
   #  build: .
