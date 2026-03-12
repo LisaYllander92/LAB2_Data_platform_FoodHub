@@ -6,6 +6,7 @@ from kafka import KafkaProducer
 from psycopg_pool import ConnectionPool
 from pathlib import Path
 import pandas as pd
+from app.producer import send_recipes
 from app.services.recipe_service import has_ingredient
 from psycopg.rows import dict_row
 
@@ -33,4 +34,5 @@ def read_root():
 @app.get("/recipes/search")
 def search_by_ingredient(ingredient: str):
     matches = has_ingredient(ingredient)
+    send_recipes(ingredient)
     return matches.to_dict(orient="records")

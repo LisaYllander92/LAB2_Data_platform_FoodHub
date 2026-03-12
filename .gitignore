@@ -7,3 +7,5 @@ venv/
 *.parquet
 .idea/
 *.json
+data/filtered/search_recipe.json
+data/cleaning_recipe.json
