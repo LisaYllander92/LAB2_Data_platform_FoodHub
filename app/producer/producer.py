@@ -14,7 +14,7 @@ producer = KafkaProducer(
 )
 def send_recipes(search: str):
     df = has_ingredient(search)
-    future = producer.send('recipe-result', value=df.to_dict('records')) # Skickar recepten till Kafka-topicen, omvandlar DataFrame till en lista av dicts — ett recept per dict.
+    future = producer.send('recipe-request', value=df.to_dict('records')) # Skickar recepten till Kafka-topicen, omvandlar DataFrame till en lista av dicts — ett recept per dict.
     try:
         record_metadata = future.get(timeout=2) # Väntar på bekräftelse från Kafka (max 2 sekunder). Om det lyckas loggas topic och offset. Om något går fel loggas felet.
         log.info(f"Message sent to {record_metadata.topic}, offset {record_metadata.offset}")
