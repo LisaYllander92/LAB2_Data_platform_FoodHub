@@ -1,6 +1,6 @@
 import json
 import pandas as pd
-from app.schema.schema import FoodData
+from app.schema.internal.schema import FoodData
 
 df = pd.read_json("cleaning_recipe.json")
 flagged_df = df.copy()
