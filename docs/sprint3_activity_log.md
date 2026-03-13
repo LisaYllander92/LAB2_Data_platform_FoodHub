@@ -33,3 +33,31 @@
 
 ### Blockers
 None
+
+# Sprint 3 – Standup & Status Update
+**March 13, 2026**
+
+**Attendees:** Julius, Filippa, Lisa, Rickard, Anton joined at lunch
+
+---
+
+## Blockers
+| Who | Blocker |
+|-----|---------|
+| Filippa | Occupied with completion of previous course |
+
+---
+
+## Today
+| Who | Task |
+|-----|------|
+| Filippa | Continuing data modeling, will start #4 (ingredient validation) over the weekend |
+| Julius | Created `init.sql` tables |
+| Rickard & Lisa | Pair programming `consumer.py` and `database.py` *(Lisa driving, Rickard navigating)* |
+| Anton | Joined at lunch, briefed on sprint progress, outlined approach for Spoonacular API task |
+| Rickard | Created docs folder, requested team feedback on content |
+
+---
+
+## Next Standup
+Monday March 16 – on-site at 09:00
