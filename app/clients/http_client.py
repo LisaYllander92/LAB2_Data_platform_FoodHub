@@ -7,13 +7,14 @@ T = TypeVar("T", bound=BaseModel)
 
 class HttpClient:
 
+    ## usage example, modular get. interface - await http_client.get(url, Response, params)
     async def get(self, url: str, schema: Type[T], params: dict | None = None) -> T:
 
         async with httpx.AsyncClient() as client:
             response = await client.get(url, params=params)
 
         response.raise_for_status()
-
         data = response.json()
-
         return schema.model_validate(data)
+
+

@@ -1,36 +1,28 @@
 import pandas as pd
-from pathlib import Path
-from rapidfuzz import fuzz
+from app.clients.spoonacular_client import (
+    search_recipes,
+    get_recipe_information
+)
+from app.transformers.recipe_transformers import transform_recipe
 
-BASE_DIR = Path(__file__).resolve().parent.parent.parent  # points to Root
-
-THRESHOLD = 80
-
-def contains_search(ingredients, search):
-    if not isinstance(ingredients, list):
-        return False
-    for item in ingredients:
-        if search.lower() in item.lower():
-            return True
-        if fuzz.partial_ratio(search.lower(), item.lower()) >= THRESHOLD: #fuzzy match,returns true if score meets THRESHOLD
-            return True #
-    return False
+from app.services.ingredient_service import has_ingredient
 
 
-def has_ingredient(search: str) -> pd.DataFrame:
-    df = pd.read_json(BASE_DIR / "data" / "cleaning_recipe.json")
-    search_terms = [s.strip() for s in search.replace(",", " ").split()] # splits search string into individual terms
+async def search_pipeline(query: str, number: int, offset: int):
 
-    mask = pd.Series([True] * len(df), index=df.index) #
+    search_response = await search_recipes(query, number, offset)
+    recipes = []
+    for r in search_response.results:
+        full_recipe = await get_recipe_information(r.id)
+        recipe = transform_recipe(full_recipe)
+        recipes.append(recipe.model_dump())
 
-    for term in search_terms: #
-        match = df["ingredients"].apply(contains_search, search=term) # 
-        mask = mask & match
-        
-    matches = df[mask]
-    
-    output_path = BASE_DIR / "data" / "filtered" / "search_recipe.json"
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    matches.to_json(output_path, orient="records", indent=2)
+    df = pd.DataFrame(recipes)
+    matches = has_ingredient(query, df)
 
-    return matches
+    return {
+        "recipes": matches.to_dict(orient="records"),
+        "totalResults": search_response.totalResults,
+        "offset": search_response.offset,
+        "number": search_response.number
+    }
