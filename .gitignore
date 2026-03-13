@@ -7,3 +7,7 @@ venv/
 *.parquet
 .idea/
 *.json
+.DS_Store
+.AppleDouble
+.LSOverride
+._*

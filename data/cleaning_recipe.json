@@ -15,7 +15,7 @@
       "pepper"
     ],
     "servings":2,
-    "instructions":"Boil spaghetti. Fry beef with onion and garlic. Add tomato sauce. Mix together. ",
+    "instructions":"Boil spaghetti. Fry beef with onion and garlic. Add tomato sauce. Mix together.",
     "allergies":[
       "gluten"
     ]
@@ -34,14 +34,14 @@
       "salt"
     ],
     "servings":3,
-    "instructions":"Cut chicken. Fry onion. Add curry paste and coconut milk then simmer. ",
+    "instructions":"Cut chicken. Fry onion. Add curry paste and coconut milk then simmer.",
     "allergies":[
       "nuts"
     ]
   },
   {
     "id":3,
-    "title":"Veggie Tacos ",
+    "title":"Veggie Tacos",
     "image":"https:\/\/example.com\/tacos.png",
     "cooking_minutes":20,
     "ingredients":[
@@ -54,10 +54,10 @@
       "avocado"
     ],
     "servings":4,
-    "instructions":"Heat beans. Fill taco shells with beans and vegetables. ",
+    "instructions":"Heat beans. Fill taco shells with beans and vegetables.",
     "allergies":[
-      "dairy",
-      "gluten"
+      "gluten",
+      "dairy"
     ]
   },
   {
@@ -73,7 +73,7 @@
       "butter"
     ],
     "servings":2,
-    "instructions":"Mix ingredients. Fry small pancakes in butter. ",
+    "instructions":"Mix ingredients. Fry small pancakes in butter.",
     "allergies":[
       "gluten",
       "dairy",
@@ -94,7 +94,7 @@
       "salt"
     ],
     "servings":0,
-    "instructions":"Boil tomatoes and onion. Blend. Add cream and season. ",
+    "instructions":"Boil tomatoes and onion. Blend. Add cream and season.",
     "allergies":[
       "dairy"
     ]
