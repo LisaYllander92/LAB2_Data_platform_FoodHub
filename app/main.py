@@ -6,7 +6,7 @@ from kafka import KafkaProducer
 from psycopg_pool import ConnectionPool
 from pathlib import Path
 import pandas as pd
-from app.producer import send_recipes
+from app.producer.producer import send_recipes
 from app.services.recipe_service import has_ingredient
 from psycopg.rows import dict_row
 
