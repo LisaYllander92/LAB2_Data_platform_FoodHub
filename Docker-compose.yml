@@ -16,16 +16,17 @@ services:
       - "5432:5432"
     volumes:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
-      - postgres_data:/var/lib/postgresql
+      - postgres_data:/var/lib/postgresql/data
 
   kafka:
       image: apache/kafka:4.1.1
       container_name: kafka_foodhub
-      ports:
+      #ports:
         # host -> kafka (for tools running on your laptop)
-        - "29092:29092"
+       # - "29092:29092"
       volumes:
-        - kafka_data:/bitnami
+        - kafka_data:/var/lib/kafka/data
+        #- kafka_data:/bitnami
       environment:
         KAFKA_NODE_ID: "1"
         KAFKA_PROCESS_ROLES: "broker,controller"
@@ -55,15 +56,15 @@ services:
     container_name: kafka-init_foodhub
     depends_on:
       - kafka
-    entrypoint: ["/bin/sh", "-c", "sleep 5 && /opt/kafka/bin/kafka-topics.sh --create --if-not-exists --bootstrap-server kafka:9092 --topic recipe-result --partitions 1 --replication-factor 1"]
+    entrypoint: ["/bin/sh", "-c", "sleep 5 && /opt/kafka/bin/kafka-topics.sh --create --if-not-exists --bootstrap-server kafka:9092 --topic recipe-request --partitions 1 --replication-factor 1"]
 
-  #consumer:
-  #  build: .
-  #  env_file:
-  #    - .env
-  #  depends_on:
-  #    - kafka
-  #  command: [ "uv", "run", "python", "-u", "app/consumer/print.py" ]  
+  consumer:
+    build: .
+    env_file:
+      - .env
+    depends_on:
+      - kafka
+    command: [ "uv", "run", "python", "-u", "app/consumer/consumer.py" ]
 
   app:
     build: .  # searches for Dockerfile (creates image)
