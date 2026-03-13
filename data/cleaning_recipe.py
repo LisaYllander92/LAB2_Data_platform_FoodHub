@@ -11,7 +11,7 @@ print("\nDtypes:")
 print(recipes_df.dtypes)
 
 ####### Title #######
-recipes_df["title"] = recipes_df["title"].str.replace(r"\s+", " ", regex=True).str.title()
+recipes_df["title"] = recipes_df["title"].str.replace(r"\s+", " ", regex=True).str.strip().str.title()
 
 ###### Cooking time #######
 recipes_df["cooking_minutes"] = pd.to_numeric(recipes_df["cooking_minutes"], errors="coerce")
@@ -55,7 +55,7 @@ def capitalize_sentences(text):
     sentences = [s.capitalize() for s in sentences]
     return ". ".join(sentences)
 recipes_df["instructions"] = recipes_df["instructions"].str.replace(r"\.\s*", ". ", regex=True)
-recipes_df["instructions"] = recipes_df["instructions"].apply(capitalize_sentences)
+recipes_df["instructions"] = recipes_df["instructions"].apply(capitalize_sentences).str.strip()
 
 ####### Allergies #######
 recipes_df["allergies"] = recipes_df["allergies"].apply(lambda x: list(set(i.lower().strip() for i in x))if isinstance(x, list) else x)
