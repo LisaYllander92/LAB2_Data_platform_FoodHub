@@ -9,9 +9,9 @@
 ### Planning Poker
 | Story | Description | Average Points |
 |-------|-------------|---------------|
+| #4 | (validation) – average 6.8
 | #8 | Spoonacular API | 14.6 |
 | #17 | Spell correction | 10.0 |
-| #26 | Kafka producer/topic | 12.5 |
 
 ### Task Distribution
 | Who | Task |
@@ -49,13 +49,16 @@ None
 ---
 
 ## Today
-| Who | Task |
-|-----|------|
+| Who     | Task |
+|---------|------|
 | Filippa | Continuing data modeling, will start #4 (ingredient validation) over the weekend |
-| Julius | Created `init.sql` tables |
-| Rickard & Lisa | Pair programming `consumer.py` and `database.py` *(Lisa driving, Rickard navigating)* |
-| Anton | Joined at lunch, briefed on sprint progress, outlined approach for Spoonacular API task |
+| Julius | Created `init.sql` with curated schema: `curated_recipe`, `ingredients`, `recipe_ingredients`, 
+`recipe_steps`, `users`, `favorites`, `search_events`, `search_event_ingredients` |
+| Lisa    | Pair programming `consumer.py` and `database.py` *(Lisa driving, Rickard navigating)* |
+| Anton   | Joined at lunch, briefed on sprint progress, outlined approach for Spoonacular API task |
 | Rickard | Created docs folder, requested team feedback on content |
+| Rickard | Added `.dockerignore` to reduce Docker image size |
+
 
 ---
 
