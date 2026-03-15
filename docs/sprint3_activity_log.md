@@ -58,6 +58,8 @@ None
 | Anton   | Joined at lunch, briefed on sprint progress, outlined approach for Spoonacular API task |
 | Rickard | Created docs folder, requested team feedback on content |
 | Rickard | Added `.dockerignore` to reduce Docker image size |
+| Anton | Created Pydantic schemas for Spoonacular API response – `SpoonacularRecipeInformation`, `SpoonacularIngredient`, `SpoonacularMeasures` in `app/schema/spoonacular/` |
+| Anton | Created internal `Recipe` and `Ingredient` schemas in `app/schema/internal/` |
 
 
 ---
