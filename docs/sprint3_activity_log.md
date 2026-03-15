@@ -60,6 +60,7 @@ None
 | Rickard | Added `.dockerignore` to reduce Docker image size |
 | Anton | Created Pydantic schemas for Spoonacular API response – `SpoonacularRecipeInformation`, `SpoonacularIngredient`, `SpoonacularMeasures` in `app/schema/spoonacular/` |
 | Anton | Created internal `Recipe` and `Ingredient` schemas in `app/schema/internal/` |
+| Anton | Implemented generic async `HttpClient` using `httpx` with Pydantic model validation |
 
 
 ---
