@@ -14,7 +14,19 @@ class SpoonacularRecipeShort(BaseModel):
 
 # Hela svaret från /recipes/complexSearch
 class SpoonacularSearchResponse(BaseModel):
-    offset: int
-    number: int
-    totalResults: int
-    results: List[SpoonacularRecipeShort] = []
+    offset: int         # var i resultatlistan vi börjar, används för paginering
+    number: int         # antal recept som returnerades
+    totalResults: int   # totalt antal träffar i Spoonacular
+    results: List[SpoonacularRecipeShort] = [] # lista med korta receptobjekt
+
+
+#**Kopplingen till projektet:**
+# ```
+# search_recipes()
+#         ↓
+# Spoonacular svarar med lista av korta recept
+#         ↓
+# SpoonacularSearchResponse validerar svaret
+#         ↓
+# for r in search_response.results:
+#     get_recipe_information(r.id)  ← hämtar fullständig info per recept
