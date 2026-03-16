@@ -1,5 +1,14 @@
-from pydantic import BaseModel
-from typing import List, Optional
+from pydantic import BaseModel, field_validator
+from typing import List, Optional, Any
+import math
+
+def clean_numeric(v: Any) -> Any:
+    if v is None or v == "":
+        return None
+    #om värdet är ett flyttal OCH är antingen NaN (Not a Number) eller Inf (oändlighet), returnera None
+    if isinstance(v, float) and (math.isnan(v) or math.isinf(v)):
+        return None
+    return v
 
 #Det här är er Spoonacular-svarsmodell —
 # den speglar exakt hur Spoonaculars API svarar när ni hämtar ett specifikt recept.
@@ -25,6 +34,11 @@ class SpoonacularIngredient(BaseModel):
     measures: Optional[SpoonacularMeasures] = None
     meta: List[str] = []
 
+    @field_validator("amount", mode="before")
+    @classmethod
+    def validate_numeric(cls, v):
+        return clean_numeric(v) or 0.0
+
 # Hela receptsvaret från Spoonacular — används i get_recipe_information()
 class SpoonacularRecipeInformation(BaseModel):
     id: int
@@ -39,3 +53,8 @@ class SpoonacularRecipeInformation(BaseModel):
     instructions: Optional[str] = None
     dishTypes: List[str] = []
     extendedIngredients: List[SpoonacularIngredient] = []
+
+    @field_validator("servings", "readyInMinutes", "cookingMinutes", "preparationMinutes", mode="before")
+    @classmethod
+    def validate_numeric(cls, v):
+        return clean_numeric(v)
