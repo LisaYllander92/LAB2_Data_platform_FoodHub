@@ -22,25 +22,20 @@ class SpoonacularIngredient(BaseModel):
     original: str
     amount: float
     unit: str
-    measures: SpoonacularMeasures
-    meta: List[str]
+    measures: Optional[SpoonacularMeasures] = None
+    meta: List[str] = []
 
 # Hela receptsvaret från Spoonacular — används i get_recipe_information()
 class SpoonacularRecipeInformation(BaseModel):
-
     id: int
     title: str
-    image: str
-
-    servings: Optional[int]
-    readyInMinutes: Optional[int]
-    cookingMinutes: Optional[int]
-    preparationMinutes: Optional[int]
-
-    sourceUrl: Optional[str]
-    summary: Optional[str]
-    instructions: Optional[str]
-
+    image: Optional[str] = None
+    servings: Optional[int] = None
+    readyInMinutes: Optional[int] = None
+    cookingMinutes: Optional[int] = None
+    preparationMinutes: Optional[int] = None
+    sourceUrl: Optional[str] = None
+    summary: Optional[str] = None
+    instructions: Optional[str] = None
     dishTypes: List[str] = []
-
-    extendedIngredients: List[SpoonacularIngredient] # fullständig ingredienslista
+    extendedIngredients: List[SpoonacularIngredient] = []

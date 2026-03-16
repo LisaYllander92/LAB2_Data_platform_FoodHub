@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List
+from typing import List, Optional, Any
 
 #Det här är er söksvarsmodell —
 # den speglar vad Spoonacular returnerar när ni söker efter recept (till skillnad från recipe_information_schema som är detaljinfo om ett specifikt recept).
@@ -9,24 +9,12 @@ from typing import List
 class SpoonacularRecipeShort(BaseModel):
     id: int
     title: str
-    image: str
-    imageType: str
+    image: Optional[str] = None
+    imageType: Optional[str] = None
 
 # Hela svaret från /recipes/complexSearch
 class SpoonacularSearchResponse(BaseModel):
-    offset: int         # var i resultatlistan vi börjar, används för paginering
-    number: int         # antal recept som returnerades
-    totalResults: int   # totalt antal träffar i Spoonacular
-    results: List[SpoonacularRecipeShort]  # lista med korta receptobjekt
-
-
-    #**Kopplingen till projektet:**
-# ```
-# search_recipes()
-#         ↓
-# Spoonacular svarar med lista av korta recept
-#         ↓
-# SpoonacularSearchResponse validerar svaret
-#         ↓
-# for r in search_response.results:
-#     get_recipe_information(r.id)  ← hämtar fullständig info per recept
+    offset: int
+    number: int
+    totalResults: int
+    results: List[SpoonacularRecipeShort] = []
