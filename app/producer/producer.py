@@ -1,11 +1,23 @@
 from kafka import KafkaProducer
 from kafka.errors import KafkaError
 import json
-import logging # för att logga vad som händer, istället för print typ
-from app.services.recipe_service import has_ingredient
+import logging
+from app.services.ingredient_service import has_ingredient
 import os
 
-log = logging.getLogger(__name__) # Skapar en logger kopplad till denna fil — används för att skriva ut meddelanden i terminalen.
+log = logging.getLogger(name)
+
+_producer = None  # modulnivå — bara en variabel, ingen anslutning
+
+def get_producer():
+    global _producer
+    if _producer is None:
+        _producer = KafkaProducer(
+            bootstrap_servers=[os.getenv("KAFKA_BOOTSTRAP_SERVERS", "kafka:9092")],
+            value_serializer=lambda m: json.dumps(m).encode('utf-8'),
+            retries=5
+        )
+    return _producer
 
 ##Fix to make sure kafka is initialized when needed and not before it's ready.
 

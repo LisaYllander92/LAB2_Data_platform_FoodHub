@@ -12,13 +12,13 @@
 ---
 
 ## March 5
-| Who | Activity |
-|-----|----------|
-| Julius | Created conceptual model |
-| Lisa | Created logical model |
-| Rickard | Created `schema.py`, base structure of `main.py`, and `.env` template |
-| Lisa | Added Docker Compose, Dockerfile and Development branch |
-| Rickard | Added `.gitignore` |
+| Who         | Activity |
+|-------------|----------|
+| Julius      | Created conceptual model |
+| Lisa (Team) | Created logical model |
+| Rickard     | Created `schema.py`, base structure of `main.py`, and `.env` template |
+| Lisa        | Added Docker Compose, Dockerfile and Development branch |
+| Rickard     | Added `.gitignore` |
 
 ---
 

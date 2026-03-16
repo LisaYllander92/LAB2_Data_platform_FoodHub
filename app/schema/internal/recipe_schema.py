@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from typing import List, Optional
 
-
+# Representerar en enskild ingrediens i ett recept
 class Ingredient(BaseModel):
     id: int
     name: str
@@ -9,7 +9,7 @@ class Ingredient(BaseModel):
     amount: float
     unit: str
 
-
+# Ert interna receptformat — används efter transform_recipe() omvandlat Spoonacular-data
 class Recipe(BaseModel):
     id: int
     title: str

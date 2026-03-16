@@ -17,4 +17,4 @@
 
 ##  What do we improve for the next sprint?
 - Clearer role distribution with defined boundaries between PO and Scrum Master
-- Pair programming (2 & 2) instead of the whole group at oncehe same time
+- Pair programming (2 & 2) instead of the whole group at once

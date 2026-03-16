@@ -7,7 +7,7 @@ from app.transformers.recipe_transformers import transform_recipe
 
 from app.services.ingredient_service import has_ingredient
 
-
+# sök recept → hämta detaljer för varje recept → transformera → filtrera på ingrediens
 async def search_pipeline(query: str, number: int, offset: int):
 
     search_response = await search_recipes(query, number, offset)
