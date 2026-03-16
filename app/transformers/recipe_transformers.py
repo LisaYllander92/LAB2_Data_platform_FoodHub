@@ -10,8 +10,10 @@ def transform_recipe(values: SpoonacularRecipeInformation) -> Recipe:
     raw = []
     normalized = []
 
+    # Loopar igenom alla ingredienser från Spoonacular
     for ing in values.extendedIngredients:
 
+        # Skapar ett Ingredient-objekt i ert interna format
         ingredient = Ingredient(
             id=ing.id,
             name=ing.name,
@@ -23,12 +25,13 @@ def transform_recipe(values: SpoonacularRecipeInformation) -> Recipe:
         raw.append(ing.original)
         normalized.append(ing.name.lower())
 
+    # Omvandlar från Spoonaculars camelCase till ert snake_case-format
     return Recipe(
         id=values.id,
         title=values.title,
         image=values.image,
         servings=values.servings,
-        ready_in_minutes=values.readyInMinutes,
+        ready_in_minutes=values.readyInMinutes, # camelCase → snake_case
         cooking_minutes=values.cookingMinutes,
         preparation_minutes=values.preparationMinutes,
         instructions=values.instructions,
@@ -39,3 +42,4 @@ def transform_recipe(values: SpoonacularRecipeInformation) -> Recipe:
         summary=values.summary,
         source_url=values.sourceUrl
     )
+#normalized är särskilt viktig — det är den som gör att has_ingredient("avocado") kan matcha mot recepten från Spoonacular.
