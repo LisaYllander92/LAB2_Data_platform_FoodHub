@@ -5,7 +5,7 @@ import logging
 from app.services.ingredient_service import has_ingredient
 import os
 
-log = logging.getLogger(name)
+log = logging.getLogger(__name__)
 
 _producer = None  # modulnivå — bara en variabel, ingen anslutning
 

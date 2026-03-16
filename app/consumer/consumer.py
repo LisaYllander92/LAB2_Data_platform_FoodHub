@@ -11,14 +11,28 @@ TOPIC = "recipe-request"
 GROUP_ID = "print-request"
 
 def main():
-    consumer = KafkaConsumer(
-        TOPIC,
-        bootstrap_servers=KAFKA_BOOTSTRAP_SERVERS,
-        group_id=GROUP_ID,
-        auto_offset_reset="latest",
-        value_deserializer=lambda b: json.loads(b.decode("utf-8")),
-        key_deserializer=lambda b: b.decode("utf-8") if b else None,
-    )
+    import time
+
+    consumer = None
+    for attempt in range(10):
+        try:
+            consumer = KafkaConsumer(
+                TOPIC,
+                bootstrap_servers=KAFKA_BOOTSTRAP_SERVERS,
+                group_id=GROUP_ID,
+                auto_offset_reset="latest",
+                value_deserializer=lambda b: json.loads(b.decode("utf-8")),
+                key_deserializer=lambda b: b.decode("utf-8") if b else None,
+            )
+            print("Connected to Kafka!")
+            break
+        except Exception as e:
+            print(f"Kafka not ready, retrying... ({attempt + 1}/10): {e}")
+            time.sleep(5)
+
+    if consumer is None:
+        print("Could not connect to Kafka after 10 tries.")
+        return
 
     for msg in consumer:
         print("Received:", msg.value)
