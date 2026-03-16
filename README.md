@@ -1,4 +1,4 @@
-
+![FoodHub logo](images/logo.png)
 ## A Recipe Search Platform For All Your Needs
 *Fast, easy, and surprisingly satisfying.\
 Craving something good?\
