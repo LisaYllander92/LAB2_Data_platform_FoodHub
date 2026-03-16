@@ -1,3 +1,23 @@
 [
-
+  {
+    "id":3,
+    "title":"Veggie Tacos",
+    "image":"https:\/\/example.com\/tacos.png",
+    "cooking_minutes":20,
+    "ingredients":[
+      "4 taco shells",
+      "1 can black beans",
+      "lettuce",
+      "tomato",
+      "cheddar cheese",
+      "salsa",
+      "avocado"
+    ],
+    "servings":4,
+    "instructions":"Heat beans. Fill taco shells with beans and vegetables.",
+    "allergies":[
+      "gluten",
+      "dairy"
+    ]
+  }
 ]

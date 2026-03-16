@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Query
 
-from app.services.recipe_service import search_pipeline
 from app.producer.producer import send_recipes
+from app.services.recipe_service import search_pipeline
 
 router = APIRouter()
 
