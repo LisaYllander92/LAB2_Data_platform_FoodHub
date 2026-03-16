@@ -65,5 +65,44 @@ None
 
 ---
 
+# Sprint 3 – Standup & Status Update
+**March 16, 2026**
+
+**Attendees:** Julius, Filippa, Lisa, Rickard. Anton joined via call (sick).
+
+---
+
+## Today
+| Who     | Task |
+|---------|------|
+| Team    | Full sync to check status and align the group. |
+| Lisa    | **Lead Developer:** Responsible for the majority of code implementation during the session. |
+| Filippa | Data modeling completed. Now transitioning to full-time focus on group tasks. |
+| Anton   | Participated via call (sick). Briefed the team on Friday's progress and implementation. |
+| Team    | Code review: Walkthrough of Anton's code to ensure shared understanding. |
+| Team    | Troubleshooting: Extensive debugging session led by Lisa to resolve system issues. |
+| Team    | API Management: Configured an additional API key after reaching the token limit. |
+| Team    | Started development of `ingredient_validator`. |
+| Team    | Integration testing: Verified the Producer-Topic-Consumer flow with success. |
+
+---
+
+## Blockers
+| Who | Blocker |
+|-----|---------|
+| Anton | Out sick (participated remotely for sync and troubleshooting). |
+| Team  | Reached token limit for API (resolved by adding a new API key). |
+
+---
+
+## Delivered
+| Who    | Delivery |
+|--------|----------|
+| Lisa   | Implementation of core logic and bug fixes across the system. |
+| Filippa| Finalized Data Modeling. |
+| Team   | Successful end-to-end test of the Kafka pipeline (Producer -> Topic -> Consumer). |
+
+---
+
 ## Next Standup
-Monday March 16 – on-site at 09:00
+Tuesday March 17 – 09:00
