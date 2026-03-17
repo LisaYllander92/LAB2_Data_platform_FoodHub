@@ -4,8 +4,8 @@
 # Contains a list of abstract-multi-containers
 services:
   postgres:
-    image: postgres:18
-    container_name: foodhub
+    image: postgres:16
+    container_name: postgres
 
     # Points to .env variables
     environment:
