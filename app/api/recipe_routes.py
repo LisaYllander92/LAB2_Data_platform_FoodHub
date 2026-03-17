@@ -8,6 +8,19 @@ from app.producer.producer import send_recipes
 
 router = APIRouter()
 
+# Definiera hur ett recept ska se ut (Schema)
+class Recipe(BaseModel):
+    title: str
+    ingredients: list
+    instructions: str
+
+@router.post("/recipes")
+async def create_recipe(recipe: Recipe):
+    # Här skickar vi hela recept-objektet till Kafka
+    send_recipes(recipe.dict())
+    return {"status": "Recipe sent to Kafka", "data": recipe}
+
+
 def clean_json(obj):
     if isinstance(obj, float) and (math.isnan(obj) or math.isinf(obj)):
         return None
