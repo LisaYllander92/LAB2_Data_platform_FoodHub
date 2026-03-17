@@ -1,3 +1,4 @@
+import pandas as pd
 import os
 import json
 import asyncio
@@ -34,19 +35,27 @@ def main():
         print("Could not connect to Kafka after 10 tries.")
         return
 
+
+    # ... inuti din consumer-loop:
     for msg in consumer:
         print("Received:", msg.value)
         try:
-            # 1. Spara söktermen i staging
+            # 1. Konvertera till JSON-sträng.
+            # Vi använder en funktion (default) för att tvinga NaN till null
+            clean_json = json.dumps(msg.value,
+                                    default=lambda o: None if isinstance(o, float) and pd.isna(o) else o).replace('NaN',
+                                                                                                                  'null')
+
+            # 2. Ladda tillbaka till ett rent objekt
+            clean_data = json.loads(clean_json)
+
             with pool.connection() as conn:
                 conn.execute(
                     "INSERT INTO staging_recipes (raw_data) VALUES (%s)",
-                    (Json(msg.value),)
+                    (Json(clean_data),)
                 )
-                # 2. Anropa Spoonacular och spara resultatet
-                query = msg.value.get("query") if isinstance(msg.value, dict) else msg.value
-                result = asyncio.run(search_pipeline(query, number=5, offset=0))
-                print("Pipeline result:", result)
+                conn.commit()
+                print("Success: Data sparad i staging_recipes!")
 
         except Exception as e:
             print(f"Failed to insert message: {e}")
