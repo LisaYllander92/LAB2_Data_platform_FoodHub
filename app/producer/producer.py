@@ -9,15 +9,6 @@ log = logging.getLogger(__name__)
 
 _producer = None  # modulnivå — bara en variabel, ingen anslutning
 
-def get_producer():
-    global _producer
-    if _producer is None:
-        _producer = KafkaProducer(
-            bootstrap_servers=[os.getenv("KAFKA_BOOTSTRAP_SERVERS", "kafka:9092")],
-            value_serializer=lambda m: json.dumps(m).encode('utf-8'),
-            retries=5
-        )
-    return _producer
 
 ##Fix to make sure kafka is initialized when needed and not before it's ready.
 
