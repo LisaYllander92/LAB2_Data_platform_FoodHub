@@ -24,13 +24,22 @@ def get_producer() -> KafkaProducer:
     return _producer
 
 
-def send_recipes(search: str):
-    df = has_ingredient(search)
+def send_recipes(data):
+    if isinstance(data, str):
+        df = has_ingredient(data)
+        payload = df.to_dict('records')
+    elif isinstance(data, dict):
+        payload = [data] if not isinstance(data, list) else data
+    else:
+        log.error(f"Unexpected format to 'send_recipe': {type(data)}")
+        return
 
+    # Send to Kafka
     try:
         producer = get_producer()
-        future = producer.send('recipe-request', value=df.to_dict( 'records'))  # Skickar recepten till Kafka-topicen, omvandlar DataFrame till en lista av dicts — ett recept per dict.
-        record_metadata = future.get(timeout=2) # Väntar på bekräftelse från Kafka (max 2 sekunder). Om det lyckas loggas topic och offset. Om något går fel loggas felet.
+        # Vi skickar 'payload' som nu garanterat är en lista/dict som kan JSON-serialiseras
+        future = producer.send('recipe-request', value=payload)
+        record_metadata = future.get(timeout=2)
         log.info(f"Message sent to {record_metadata.topic}, offset {record_metadata.offset}")
     except KafkaError:
         log.exception("Failed to send message to Kafka")

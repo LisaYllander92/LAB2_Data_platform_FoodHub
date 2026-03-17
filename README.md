@@ -47,6 +47,10 @@ docker compose up --build
 
 4. API is now running at `http://localhost:8000`
 
+5. Test in postgreSQL:
+docker exec -i postgres psql -U foodhub -d foodhub_db < init.sql
+docker exec -it postgres psql -U foodhub -d foodhub_db -c "SELECT * FROM staging_recipes;"
+
 ## 👀 Behind the scenes - add separate pdf:s
 - The Team Work (planing poker, agile roles etc)
 - Data Modeling and business requirements 
