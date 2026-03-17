@@ -1,6 +1,7 @@
+import math
 from fastapi import APIRouter, Query
 from fastapi.responses import JSONResponse
-import math
+from pydantic import BaseModel
 
 from app.services.recipe_service import search_pipeline
 from app.producer.producer import send_recipes

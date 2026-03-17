@@ -42,9 +42,7 @@ def main():
         try:
             # 1. Konvertera till JSON-sträng.
             # Vi använder en funktion (default) för att tvinga NaN till null
-            clean_json = json.dumps(msg.value,
-                                    default=lambda o: None if isinstance(o, float) and pd.isna(o) else o).replace('NaN',
-                                                                                                                  'null')
+            clean_json = json.dumps(msg.value, default=lambda o: None if isinstance(o, float) and pd.isna(o) else o).replace('NaN', 'null')
 
             # 2. Ladda tillbaka till ett rent objekt
             clean_data = json.loads(clean_json)
