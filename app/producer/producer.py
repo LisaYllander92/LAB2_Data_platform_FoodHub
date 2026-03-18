@@ -28,10 +28,17 @@ def send_recipes(data):
     if isinstance(data, str):
         df = has_ingredient(data)
         payload = df.to_dict('records')
+    elif isinstance(data, list):
+        payload = data
+        #payload = [data] if not isinstance(data, list) else data
     elif isinstance(data, dict):
-        payload = [data] if not isinstance(data, list) else data
+        payload = [data]
     else:
         log.error(f"Unexpected format to 'send_recipe': {type(data)}")
+        return
+
+    if not payload:
+        log.info("No data to send to Kafka (empty list)")
         return
 
     # Send to Kafka

@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS staging_recipes (
 
 CREATE TABLE IF NOT EXISTS curated_recipe (
     id SERIAL PRIMARY KEY,
-    title VARCHAR(250) NOT NULL,
+    title VARCHAR(250) NOT NULL UNIQUE, -- Lade till UNIQUE här
     image TEXT,
     cooking_minutes INT,
     servings INT,
