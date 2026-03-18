@@ -1,6 +1,7 @@
 import pandas as pd
 import os
 import json
+import re
 import asyncio
 from kafka import KafkaConsumer
 from psycopg.types.json import Json
@@ -45,6 +46,9 @@ def main():
 
         for recipe in recipes_list:
             try:
+                raw_instruction = recipe.get("instructions") or ""
+                clean_instruction = re.sub(r'<[^>]*>', '', raw_instruction).strip()
+
                 with pool.connection() as conn:
                     with conn.cursor() as cur:
                         # STEG A: Spara rådata i Staging (för historik/backup)
@@ -64,13 +68,13 @@ def main():
                                 recipe.get("image"),
                                 recipe.get("cooking_minutes", 0),
                                 recipe.get("servings", 0),
-                                recipe.get("instructions", "")
+                                clean_instruction
                             )
                         )
                         res = cur.fetchone()
                         if res:
-                            new_recipe_id = res[0]
-                            print(f"Success: Recept '{recipe.get('title')}' curerat till DB!")
+                            #new_recipe_id = res[0]
+                            print(f"Success: Recept '{recipe.get('title')}' cureted & cleaned!")
 
                     conn.commit()
             except Exception as e:
