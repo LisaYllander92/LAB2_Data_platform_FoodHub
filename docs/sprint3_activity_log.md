@@ -104,5 +104,23 @@ None
 
 ---
 
-## Next Standup
-Tuesday March 17 – 09:00
+## March 17 – Standup & System Optimization
+**Attendees:** Rickard, Lisa, Anton, Julius, Filippa
+
+### Morning: UX Collaboration
+* Information session and initial workshop regarding upcoming collaboration with the UX class.
+
+### Afternoon: Technical Debugging & Optimization
+The team focused on resolving critical infrastructure and data ingestion issues.
+
+#### Key Deliverables:
+* **Container Networking:** Synchronized `container_name` in `docker-compose.yaml` with `DB_HOST` in `.env`. Renamed database container to `postgres` to ensure consistent internal DNS resolution for the application.
+* **PostgreSQL Version Migration:** Downgraded from **Postgres 18 to 16**. This resolved critical volume-mapping conflicts and "unused mount" errors caused by version-specific directory structures in v18.
+* **Data Cleaning (NaN fix):** Developed a cleaning function in `consumer.py` to handle JSONB compatibility. The function converts `NaN` (Not a Number) values from API responses to `null`, preventing PostgreSQL insert crashes.
+* **Docker Optimization:** Refined the service orchestration by adding robust restart cycles and health-checks, ensuring the Consumer waits for Kafka and Postgres to be fully operational.
+
+---
+
+## Current Status
+* **End-to-End Pipeline:** Functional (Producer -> Kafka -> Consumer -> Staging DB).
+* **Next Steps:** Mapping staging data to curated tables and review tasks before moving them to "Done".
