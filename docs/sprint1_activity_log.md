@@ -31,3 +31,6 @@
 
 ## Sprint 1 Demo – March 5
 - Feedback received from teacher
+
+---
+[⬅ Back to Main README](../README.md)

@@ -21,3 +21,6 @@
 - Start sprint planning and user story selection at the beginning of the sprint
 - Define clearer individual tasks earlier so everyone knows what to work on
 - Use planning poker before work begins, not after
+
+---
+[⬅ Back to Main README](../README.md)

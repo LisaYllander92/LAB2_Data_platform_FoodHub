@@ -43,3 +43,6 @@
 
 ## Sprint 2 Demo – March 12
 - Cancelled due to teacher illness
+
+---
+[⬅ Back to Main README](../README.md)
