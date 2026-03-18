@@ -36,6 +36,11 @@ async def search_recipes(
     number: int = Query(5, le=10),
     offset: int = 0
 ):
+    # get and filter recipes
     result = await search_pipeline(query, number, offset)
-    send_recipes(query)
+
+    # Send list of recipes to Kafka
+    if result["recipes"]:
+        send_recipes(result["recipes"])
+
     return JSONResponse(content=clean_json(result))
