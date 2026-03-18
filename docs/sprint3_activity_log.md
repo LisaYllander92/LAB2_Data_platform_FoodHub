@@ -124,3 +124,6 @@ The team focused on resolving critical infrastructure and data ingestion issues.
 ## Current Status
 * **End-to-End Pipeline:** Functional (Producer -> Kafka -> Consumer -> Staging DB).
 * **Next Steps:** Mapping staging data to curated tables and review tasks before moving them to "Done".
+
+---
+[⬅ Back to Main README](../README.md)
