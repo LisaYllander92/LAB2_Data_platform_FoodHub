@@ -37,26 +37,45 @@ def main():
 
 
     # ... inuti din consumer-loop:
+    # Inuti din for-loop i consumer.py:
     for msg in consumer:
-        print("Received:", msg.value)
-        try:
-            # 1. Konvertera till JSON-sträng.
-            # Vi använder en funktion (default) för att tvinga NaN till null
-            clean_json = json.dumps(msg.value, default=lambda o: None if isinstance(o, float) and pd.isna(o) else o).replace('NaN', 'null')
+        recipes_list = msg.value  # Detta är nu en lista med recept-objekt
+        if not isinstance(recipes_list, list):
+            recipes_list = [recipes_list]
 
-            # 2. Ladda tillbaka till ett rent objekt
-            clean_data = json.loads(clean_json)
+        for recipe in recipes_list:
+            try:
+                with pool.connection() as conn:
+                    with conn.cursor() as cur:
+                        # STEG A: Spara rådata i Staging (för historik/backup)
+                        cur.execute(
+                            "INSERT INTO staging_recipes (raw_data) VALUES (%s) RETURNING id",
+                            (json.dumps(recipe),)
+                        )
 
-            with pool.connection() as conn:
-                conn.execute(
-                    "INSERT INTO staging_recipes (raw_data) VALUES (%s)",
-                    (Json(clean_data),)
-                )
-                conn.commit()
-                print("Success: Data sparad i staging_recipes!")
+                        # STEG B: Spara i Curated (Den snygga tabellen)
+                        cur.execute(
+                            """
+                            INSERT INTO curated_recipe (title, image, cooking_minutes, servings, instruction)
+                            VALUES (%s, %s, %s, %s, %s) ON CONFLICT DO NOTHING RETURNING id
+                            """,
+                            (
+                                recipe.get("title"),
+                                recipe.get("image"),
+                                recipe.get("cooking_minutes", 0),
+                                recipe.get("servings", 0),
+                                recipe.get("instructions", "")
+                            )
+                        )
+                        res = cur.fetchone()
+                        if res:
+                            new_recipe_id = res[0]
+                            print(f"Success: Recept '{recipe.get('title')}' curerat till DB!")
 
-        except Exception as e:
-            print(f"Failed to insert message: {e}")
+                    conn.commit()
+            except Exception as e:
+                print(f"Error under curation: {e}")
+
 
 if __name__ == "__main__":
     main()

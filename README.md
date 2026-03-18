@@ -50,6 +50,12 @@ docker compose up --build
 5. Test in postgreSQL:
 docker exec -i postgres psql -U foodhub -d foodhub_db < init.sql
 docker exec -it postgres psql -U foodhub -d foodhub_db -c "SELECT * FROM staging_recipes;"
+docker exec -it postgres psql -U foodhub -d foodhub_db
+
+SELECT id, title, servings, cooking_minutes FROM curated_recipe;
+
+SELECT id, title, servings, LEFT(instruction, 50) || '...' AS short_instruction 
+FROM curated_recipe;
 
 ## 👀 Behind the scenes - add separate pdf:s
 - The Team Work (planing poker, agile roles etc)
