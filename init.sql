@@ -14,6 +14,8 @@ CREATE TABLE IF NOT EXISTS curated_recipe (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+ALTER TABLE curated_recipe ADD COLUMN ingredients TEXT;
+
 CREATE TABLE IF NOT EXISTS ingredients (
     ingred_id SERIAL PRIMARY KEY,
     ingred_name VARCHAR(255) NOT NULL,
