@@ -126,4 +126,36 @@ The team focused on resolving critical infrastructure and data ingestion issues.
 * **Next Steps:** Mapping staging data to curated tables and review tasks before moving them to "Done".
 
 ---
+
+# Sprint 3 – Activity Log
+**March 19, 2026**
+
+**Attendees:** Rickard, Lisa, Julius, Filippa
+
+---
+
+## Morning: Sprint Demo & Review
+| Who | Activity |
+|-----|----------|
+| Team | Presented sprint demo (demos 1–3) for teacher and class |
+| Team | Conducted sprint review session |
+| Team | Updated existing user stories and created new ones (#7, #41, #47, #48, #49, #50, #51) |
+
+---
+
+## Afternoon: Planning & Decisions
+| Who | Activity |
+|-----|----------|
+| Lisa | Presented proposed changes to `consumer.py` – reviewed by team |
+| Team | Agreed to clean up all files – comments and headers to be written consistently in English |
+| Team | Decided on data flow order: save to curated table first, then call Spoonacular API |
+| Team | Agreed to add ingredient data to curated table as part of data modeling work |
+
+---
+
+## Current Status
+* End-to-end pipeline functional (Producer → Kafka → Consumer → Staging DB).
+* **Next Steps:** Curated table mapping, ingredient storage, Spoonacular integration.
+ 
+
 [⬅ Back to Main README](../README.md)
