@@ -60,7 +60,7 @@ def main():
                         # STEG B: Spara i Curated (Den snygga tabellen)
                         cur.execute(
                             """
-                            INSERT INTO curated_recipe (title, image, cooking_minutes, servings, instruction)
+                            INSERT INTO curated_recipes (title, image, cooking_minutes, servings, instruction)
                             VALUES (%s, %s, %s, %s, %s) ON CONFLICT DO NOTHING RETURNING id
                             """,
                             (

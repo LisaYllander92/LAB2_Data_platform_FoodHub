@@ -4,17 +4,17 @@ CREATE TABLE IF NOT EXISTS staging_recipes (
     ingested_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS curated_recipe (
+CREATE TABLE IF NOT EXISTS curated_recipes (
     id SERIAL PRIMARY KEY,
-    title VARCHAR(250) NOT NULL UNIQUE, -- Lade till UNIQUE här
+    title VARCHAR(250) NOT NULL UNIQUE, 
     image TEXT,
     cooking_minutes INT,
     servings INT,
-    instruction TEXT,
+    instructions TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-ALTER TABLE curated_recipe ADD COLUMN ingredients TEXT;
+ALTER TABLE curated_recipes ADD COLUMN ingredients TEXT;
 
 CREATE TABLE IF NOT EXISTS ingredients (
     ingred_id SERIAL PRIMARY KEY,
@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS ingredients (
 
 CREATE TABLE IF NOT EXISTS recipe_ingredients (
     ingred_id INT REFERENCES ingredients(ingred_id),
-    recipe_id INT REFERENCES curated_recipe(id),
+    recipe_id INT REFERENCES curated_recipes(id),
     amount INT,
     unit VARCHAR(255),
     PRIMARY KEY (ingred_id, recipe_id)
@@ -32,9 +32,9 @@ CREATE TABLE IF NOT EXISTS recipe_ingredients (
 
 CREATE TABLE IF NOT EXISTS recipe_steps (
     step_id SERIAL PRIMARY KEY,
-    recipe_id INT REFERENCES curated_recipe(id), 
+    recipe_id INT REFERENCES curated_recipes(id), 
     step_nr INT NOT NULL,
-    instruction TEXT NOT NULL,
+    instructions TEXT NOT NULL,
     timer_minutes INT
 );
 
@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS users (
 
 CREATE TABLE IF NOT EXISTS favorites (
     user_id INT REFERENCES users(user_id),
-    recipe_id INT REFERENCES curated_recipe(id),
+    recipe_id INT REFERENCES curated_recipes(id),
     saved_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (user_id, recipe_id)
 );
