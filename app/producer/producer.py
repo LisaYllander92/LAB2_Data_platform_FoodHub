@@ -1,36 +1,51 @@
-from kafka import KafkaProducer
-from kafka.errors import KafkaError
+"""Kafka producer for sending recipe data to the message broker.
+
+Acts as a sender that takes recipes from the search function, formats them, 
+and securely delivers them to the Kafka topic. Includes automatic JSON 
+serialization and connection retries to ensure message delivery.
+"""
+import os
 import json
 import logging
+from kafka import KafkaProducer
+from kafka.errors import KafkaError
+
 from app.services.ingredient_service import has_ingredient
-import os
 
 log = logging.getLogger(__name__)
 
-_producer = None  # modulnivå — bara en variabel, ingen anslutning
+_producer = None
 
-
-##Fix to make sure kafka is initialized when needed and not before it's ready.
 
 def get_producer() -> KafkaProducer:
+    """Lazily initialize and return the Kafka producer instance.
+
+    Creates the producer only when first needed, configuring the connection 
+    to the Kafka container, automatic JSON serialization to bytes, and 
+    up to 5 delivery retries.
+    """
     global _producer
     if _producer is None:
         _producer = KafkaProducer(
-            bootstrap_servers=[os.getenv("KAFKA_BOOTSTRAP_SERVERS", "kafka:9092")], # ansluter till kafka-container
-            value_serializer=lambda m: json.dumps(m).encode('utf-8'), # omvandlar automatiskt data till bytes vid varje send
-            retries=5 # försöker upp till 5 gånger om något går fel.
+            bootstrap_servers=[os.getenv("KAFKA_BOOTSTRAP_SERVERS", "kafka:9092")],
+            value_serializer=lambda m: json.dumps(m).encode('utf-8'),
+            retries=5
         )
 
     return _producer
 
 
 def send_recipes(data):
+    """Format the input data and send it as a message to the Kafka topic.
+
+    Handles strings (by fetching ingredients to a dataframe), lists, and dicts. 
+    Logs an error if the data format is unexpected or empty.
+    """
     if isinstance(data, str):
         df = has_ingredient(data)
         payload = df.to_dict('records')
     elif isinstance(data, list):
         payload = data
-        #payload = [data] if not isinstance(data, list) else data
     elif isinstance(data, dict):
         payload = [data]
     else:
@@ -41,20 +56,10 @@ def send_recipes(data):
         log.info("No data to send to Kafka (empty list)")
         return
 
-    # Send to Kafka
     try:
         producer = get_producer()
-        # Vi skickar 'payload' som nu garanterat är en lista/dict som kan JSON-serialiseras
         future = producer.send('recipe-request', value=payload)
         record_metadata = future.get(timeout=2)
         log.info(f"Message sent to {record_metadata.topic}, offset {record_metadata.offset}")
     except KafkaError:
         log.exception("Failed to send message to Kafka")
-
-"""
-Producer är som en avsändare. Den tar recept från vår sökfunktion och skickar dem som ett paket till Kafka. 
-Kafka tar emot paketet och lägger det i en brevlåda som heter recipe-result.
-Sedan väntar den på att Kafka bekräftar att paketet kom fram – om inte försöker den igen upp till 5 gånger.
-"""
-
-

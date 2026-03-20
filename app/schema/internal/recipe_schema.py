@@ -1,16 +1,19 @@
+"""Pydantic schemas for the internal recipe and ingredient data models."""
 from pydantic import BaseModel
 from typing import List, Optional
 
-# Representerar en enskild ingrediens i ett recept
+
 class Ingredient(BaseModel):
+    """Model representing a single ingredient within a recipe."""
     id: int
     name: str
     original: str
     amount: float
     unit: str
 
-# Ert interna receptformat — används efter transform_recipe() omvandlat Spoonacular-data
+
 class Recipe(BaseModel):
+    """Internal recipe format used after transforming raw Spoonacular data."""
     id: int
     title: str
     image: Optional[str] = None

@@ -1,31 +1,33 @@
+"""Pydantic schemas mirroring the exact Spoonacular API response for specific recipes."""
 from pydantic import BaseModel, field_validator
 from typing import List, Optional, Any
 import math
 
+
 def clean_numeric(v: Any) -> Any:
+    """Clean numeric values by converting empty strings, NaN, and Inf to None."""
     if v is None or v == "":
         return None
-    #om värdet är ett flyttal OCH är antingen NaN (Not a Number) eller Inf (oändlighet), returnera None
     if isinstance(v, float) and (math.isnan(v) or math.isinf(v)):
         return None
     return v
 
-#Det här är er Spoonacular-svarsmodell —
-# den speglar exakt hur Spoonaculars API svarar när ni hämtar ett specifikt recept.
 
-# Representerar en måttenhet, t.ex. "2.5 cups" eller "590 milliliters"
 class SpoonacularMeasure(BaseModel):
+    """Model representing a specific measurement unit (e.g., '2.5 cups' or '590 milliliters')."""
     amount: float
     unitLong: str
     unitShort: str
 
-# Innehåller både metriska och amerikanska mått för en ingrediens
+
 class SpoonacularMeasures(BaseModel):
+    """Container for both metric and US measurements of an ingredient."""
     metric: SpoonacularMeasure
     us: SpoonacularMeasure
 
-# Representerar en enskild ingrediens som Spoonacular returnerar
+
 class SpoonacularIngredient(BaseModel):
+    """Model representing a single ingredient returned by the Spoonacular API."""
     id: int
     name: str
     original: str
@@ -37,10 +39,12 @@ class SpoonacularIngredient(BaseModel):
     @field_validator("amount", mode="before")
     @classmethod
     def validate_numeric(cls, v):
+        """Validate and clean the amount field, defaulting to 0.0 if invalid."""
         return clean_numeric(v) or 0.0
 
-# Hela receptsvaret från Spoonacular — används i get_recipe_information()
+
 class SpoonacularRecipeInformation(BaseModel):
+    """Full recipe response model from the Spoonacular API used in get_recipe_information()."""
     id: int
     title: str
     image: Optional[str] = None
@@ -57,4 +61,5 @@ class SpoonacularRecipeInformation(BaseModel):
     @field_validator("servings", "readyInMinutes", "cookingMinutes", "preparationMinutes", mode="before")
     @classmethod
     def validate_numeric(cls, v):
+        """Clean numeric fields to handle empty strings, NaN, or Inf before standard validation."""
         return clean_numeric(v)

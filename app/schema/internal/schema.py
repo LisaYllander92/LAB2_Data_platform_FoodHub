@@ -1,12 +1,14 @@
+"""Pydantic model for validating local JSON recipe data."""
 from pydantic import BaseModel, field_validator
 from typing import Optional, List, Any
 
-#Det här är er interna modell för lokal JSON-data —
-# används för att validera recepten från cleaning_recipe.json (er lokala datakälla), inte från Spoonacular.
 
-# Representerar ett recept från den lokala JSON-filen (cleaning_recipe.json)
-# Används i flagged_recipe.py för att validera lokal data
 class FoodData(BaseModel):
+    """Internal model representing a recipe from the local cleaning_recipe.json file.
+
+    Used primarily in flagged_recipe.py to validate local data rather 
+    than external Spoonacular API responses.
+    """
     id: int
     title: str
     image: Optional[str] = None
@@ -16,11 +18,10 @@ class FoodData(BaseModel):
     instructions: Optional[str] = None
     allergies: Optional[List[str]] = None
 
-    # Körs innan vanlig validering på cooking_minutes och servings
-    # Om värdet är None eller tom sträng returneras 0 istället för att krascha
     @field_validator("cooking_minutes", "servings", mode="before")
     @classmethod
     def replace_empty_with_zero(cls, v: Any) -> int:
+        """Convert None or empty string values to 0 before standard validation."""
         if v is None or v == "":
             return 0
         return v

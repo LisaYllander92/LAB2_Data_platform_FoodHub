@@ -1,3 +1,4 @@
+"""Recipe service pipeline for searching, fetching, transforming, and filtering recipes."""
 import json
 import pandas as pd
 from app.clients.spoonacular_client import search_recipes, get_recipe_information
@@ -5,7 +6,9 @@ from app.transformers.recipe_transformers import transform_recipe
 from app.services.ingredient_service import has_ingredient
 from app.database import pool
 
+
 def save_to_curated(recipe: dict):
+    """Save a transformed recipe to the curated table."""
     try:
         with pool.connection() as conn:
             conn.execute("""
@@ -24,16 +27,17 @@ def save_to_curated(recipe: dict):
     except Exception as e:
         print(f"Failed to save to curated_recipe: {e}")
 
-# sök recept → hämta detaljer för varje recept → transformera → filtrera på ingrediens
+
 async def search_pipeline(query: str, number: int, offset: int):
+    """Execute the full recipe search and processing pipeline."""
     search_response = await search_recipes(query, number, offset)
     recipes = []
+
     for r in search_response.results:
         full_recipe = await get_recipe_information(r.id)
         recipe = transform_recipe(full_recipe)
-        recipe_dict = recipe.model_dump() # ändrad!
-
-        save_to_curated(recipe_dict)  # ändrad ← sparar till curated_recipe
+        recipe_dict = recipe.model_dump()
+        save_to_curated(recipe_dict)
         recipes.append(recipe_dict)
 
     df = pd.DataFrame(recipes)
