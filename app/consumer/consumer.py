@@ -1,20 +1,27 @@
-import pandas as pd
 import os
 import json
-import re
-import asyncio
+import math
 from kafka import KafkaConsumer
-from psycopg.types.json import Json
 from app.database import pool
-from app.services.recipe_service import search_pipeline
 
 KAFKA_BOOTSTRAP_SERVERS = os.getenv("KAFKA_BOOTSTRAP_SERVERS", "kafka:9092")
 TOPIC = "recipe-request"
 GROUP_ID = "print-request"
 
+# NaN/Inf cleaner
+def clean_json(obj):
+    """Recursively replaces NaN/Inf with None for JSON compatibility."""
+    if isinstance(obj, float) and (math.isnan(obj) or math.isinf(obj)):
+        return None
+    if isinstance(obj, dict):
+        return {k: clean_json(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [clean_json(i) for i in obj]
+    return obj
+
 def main():
     import time
-
+    # --- Kafka connection with retry logic ---
     consumer = None
     for attempt in range(10):
         try:
@@ -37,53 +44,19 @@ def main():
         return
 
 
-    # ... inuti din consumer-loop:
-    # Inuti din for-loop i consumer.py:
+    # Ändrad!
+    # --- Save incoming messages to staging ---
+    # Curated saving is handled by recipe_service.py after Spoonacular transform
     for msg in consumer:
-        recipes_list = msg.value  # Detta är nu en lista med recept-objekt
-        if not isinstance(recipes_list, list):
-            recipes_list = [recipes_list]
-
-        for recipe in recipes_list:
             try:
-                raw_instruction = recipe.get("instructions") or ""
-                clean_instruction = re.sub(r'<[^>]*>', '', raw_instruction).strip()
-
                 with pool.connection() as conn:
-                    with conn.cursor() as cur:
-                        # STEG A: Spara rådata i Staging (för historik/backup)
-                        cur.execute(
-                            "INSERT INTO staging_recipes (raw_data) VALUES (%s) RETURNING id",
-                            (json.dumps(recipe),)
-                        )
-
-                        # STEG B: Spara i Curated (Den snygga tabellen)
-                        cur.execute(
-                            """
-                            INSERT INTO curated_recipes (title, image, cooking_minutes, servings, instruction)
-                            VALUES (%s, %s, %s, %s, %s) ON CONFLICT DO NOTHING RETURNING id
-                            """,
-                            (
-                                recipe.get("title"),
-                                recipe.get("image"),
-                                recipe.get("cooking_minutes", 0),
-                                recipe.get("servings", 0),
-                                clean_instruction
-                            )
-                        )
-                        res = cur.fetchone()
-                        if res:
-                            #new_recipe_id = res[0]
-                            print(f"Success: Recept '{recipe.get('title')}' cureted & cleaned!")
-
-                    conn.commit()
+                    conn.execute(
+                        "INSERT INTO staging_recipes (raw_data) VALUES (%s)",
+                        (json.dumps(clean_json(msg.value)),)
+                    )
+                    print("Saved to staging!")
             except Exception as e:
-                print(f"Error under curation: {e}")
-
+                print(f"Failed to insert to staging: {e}")
 
 if __name__ == "__main__":
     main()
-
-#TOPIC — ändrat till "recipe-requests" (med s)
-#import asyncio + asyncio.run() — för att köra den asynkrona search_pipeline() från synkron kod
-#query = msg.value.get("query") if isinstance(msg.value, dict) else msg.value — hanterar om meddelandet är ett JSON-objekt {"query": "avocado"} eller bara en sträng "avocado"

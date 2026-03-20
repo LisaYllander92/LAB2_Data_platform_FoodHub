@@ -43,4 +43,20 @@ async def search_recipes(
     if result["recipes"]:
         send_recipes(result["recipes"])
 
-    return JSONResponse(content=clean_json(result))
+    # Formatera recepten med läsbara ingredienser
+    formatted_recipes = [
+        {
+            "title": r["title"],
+            "servings": r["servings"],
+            "ingredients": r["ingredients_raw"],  # ← "1/4 pound chicken", "2 mangos" etc.
+            "instructions": r["instructions"]
+        }
+        for r in result["recipes"]
+    ]
+
+    return JSONResponse(content=clean_json({
+        "recipes": formatted_recipes,
+        "totalResults": result["totalResults"],
+        "offset": result["offset"],
+        "number": result["number"]
+    }))
