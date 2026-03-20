@@ -31,7 +31,7 @@ def has_ingredient(search: str, df: pd.DataFrame = None, save: bool = True) -> p
     if loaded_from_disk:
         df = pd.read_json(BASE_DIR / "data" / "cleaning_recipe.json")
 
-    print(df["ingredients"].iloc[0])
+    #print(df["ingredients"].iloc[0])
     search_terms = [s.strip() for s in search.replace(",", " ").split()]
     mask = pd.Series([True] * len(df), index=df.index)
     for term in search_terms:

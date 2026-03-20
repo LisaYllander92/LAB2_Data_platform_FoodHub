@@ -88,8 +88,24 @@ docker exec -it postgres psql -U foodhub -d foodhub_db -c "SELECT count(*) AS to
 **View Cleaned Data (Curated table):**\
 *Verifies that the Regex transformation has stripped HTML tags and structured the data.*
 ```bash
-docker exec -it postgres psql -U foodhub -d foodhub_db -c "SELECT id, title, servings, LEFT(instruction, 60) || '...' AS cleaned_instruction FROM curated_recipe LIMIT 5;"
+docker exec -it postgres psql -U foodhub -d foodhub_db -c "SELECT id, title, servings, LEFT(instructions, 60) || '...' AS cleaned_instructions FROM curated_recipes LIMIT 5;"
 ```
+## 🗄️ Querying the Database
+**View recipe with ingredients**
+```bash
+docker exec -it postgres psql -U foodhub -d foodhub_db -c "
+SELECT title, servings, jsonb_array_elements_text(ingredients::jsonb) AS ingrediens
+FROM curated_recipes
+LIMIT 20;"
+```
+**View ingredients for a specific recipe**
+```bash
+docker exec -it postgres psql -U foodhub -d foodhub_db -c "
+SELECT jsonb_array_elements_text(ingredients::jsonb) AS ingrediens
+FROM curated_recipes
+WHERE title = 'Pasta With Tuna';"
+```
+
 ---
 ## 👀 Behind the scenes 
 *Detailed documentation of our architectural design and agile development process:*
