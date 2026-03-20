@@ -156,6 +156,46 @@ The team focused on resolving critical infrastructure and data ingestion issues.
 ## Current Status
 * End-to-end pipeline functional (Producer → Kafka → Consumer → Staging DB).
 * **Next Steps:** Curated table mapping, ingredient storage, Spoonacular integration.
+
+---
+
+# Sprint 3 – Activity Log
+**March 20, 2026**
+
+**Attendees:** Rickard, Lisa, Julius, Filippa, Anton (Morning only)
+
+---
+
+## Morning: Standup & Prioritization
+| Who | Activity                                                                                                 |
+|-----|----------------------------------------------------------------------------------------------------------|
+| Team | Conducted daily standup and created priority list for remaining user stories                             |
+| Anton | Participated in the morning meeting to align on tasks, but remains on sick leave for the rest of the day |
+| Team | Performed Planning Poker for top three Priority 1 stories (#50, #48, #47)                                |
+| Team | Identified API bottleneck and decided on a caching strategy                                              |
+
+---
+
+## Afternoon: Execution & Development
+| Who | Activity                                                                                                   |
+|-----|------------------------------------------------------------------------------------------------------------|
+| Lisa | Successfully completed #50 (Data Cleaning) via screen sharing; verified that all curated data is sanitized |
+| Team | Completed #51 (Ingredient List Formatting); all ingredients are now presented in a clean, readable list    |
+| Filippa | Commenced work on #48 (Search Statistics) to track popular ingredients via Streamlit                       |
+| Julius | Commenced work on #47 (Pipeline Optimization and Logic Refinement)                                         |
+| Rickard | Cleaned up by removing unused imports and refactoring comments for clarity and consistency                 |
+
+---
+
+## Technical Decisions
+* **Caching Strategy:** Implemented "Local First" search; system queries `curated_recipe` before calling Spoonacular API to conserve API credits.
+* **Data Integrity:** Finalized automated sanitization for the curated table, ensuring HTML-free instructions and structured ingredient lists.
+
+---
+
+## Current Status
+* **Completed Today:** #50 (Data Curation Cleanup) and #51 (Ingredient List Formatting).
+* **In Progress:** Search statistics dashboard (#48) and pipeline optimization (#47).
  
 
 [⬅ Back to Main README](../README.md)
