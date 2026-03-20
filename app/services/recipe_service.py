@@ -19,7 +19,7 @@ def save_to_curated(recipe: dict):
                 recipe.get("cooking_minutes") or recipe.get("ready_in_minutes"),
                 recipe.get("servings"),
                 recipe.get("instructions"),
-                json.dumps(recipe.get("ingredients", []))
+                json.dumps(recipe.get("ingredients_raw", []))
             ))
     except Exception as e:
         print(f"Failed to save to curated_recipe: {e}")
