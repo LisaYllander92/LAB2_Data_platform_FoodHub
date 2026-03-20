@@ -3,12 +3,6 @@
 This module handles the initial search results from the /recipes/complexSearch 
 endpoint, which returns basic recipe information (unlike the detailed info).
 
-Project Flow:
-    1. search_recipes() is called.
-    2. Spoonacular returns a list of short recipes.
-    3. SpoonacularSearchResponse validates the response.
-    4. For each result, get_recipe_information(result.id) is called 
-       to fetch full details.
 """
 from pydantic import BaseModel
 from typing import List, Optional
