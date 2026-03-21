@@ -14,8 +14,8 @@ def save_to_curated(recipe: dict):
         with pool.connection() as conn:
             conn.execute("""
                 INSERT INTO curated_recipes 
-                    (title, image, cooking_minutes, servings, instructions, ingredients)
-                VALUES (%s, %s, %s, %s, %s, %s)
+                    (title, image, cooking_minutes, servings, instructions, ingredients, ingredients_normalized)
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
                 ON CONFLICT (title) DO NOTHING
             """, (
                 recipe.get("title"),
@@ -23,7 +23,8 @@ def save_to_curated(recipe: dict):
                 recipe.get("cooking_minutes") or recipe.get("ready_in_minutes"), 
                 recipe.get("servings"),
                 recipe.get("instructions"),
-                json.dumps(recipe.get("ingredients_raw", [])) # Spara som JSON-string
+                json.dumps(recipe.get("ingredients_raw", [])), # Spara som JSON-string
+                json.dumps(recipe.get("ingredients_normalized", [])) 
             ))
     except Exception as e:
         print(f"Failed to save to curated_recipe: {e}")
@@ -34,7 +35,7 @@ async def search_pipeline(query: str, number: int, offset: int):
     with pool.connection() as conn:
         with conn.cursor() as cur:
             cur.execute("""
-                SELECT title, image, cooking_minutes, servings, instructions, ingredients
+                SELECT title, image, cooking_minutes, servings, instructions, ingredients, ingredients_normalized
                 FROM curated_recipes
                 WHERE LOWER(title) LIKE %s
                 LIMIT %s
@@ -58,14 +59,26 @@ async def search_pipeline(query: str, number: int, offset: int):
                 # Konverterar från JSON-string till lista 
                 "ingredients_raw": json.loads(r[5]) if r[5] else [],
                 # Används av has_ingridient() för fuzzy search
-                "ingredients": json.loads(r[5]) if r[5] else []
+                "ingredients_normalized": json.loads(r[6]) if r[6] else [],
+                "ingredients": json.loads(r[6]) if r[6] else []
             }
             for r in cached
         ]
         
         
         df = pd.DataFrame(recipes)
+        # Returnera tomt om inga recept hittades
+        if df.empty:
+            return {
+                "recipes": [],
+                "totalResults": 0,
+                "offset": offset,
+                "number": number
+            }
         
+        # Ingredients_normalized innehåller bara namn "Chicken", "avocado" (utan enheter)
+        if "ingredients_normalized" in df.columns:
+            df["ingredients"] = df["ingredients_normalized"]
         # Kör fuzzy search 
         matches = has_ingredient(query, df, save=False)
 
@@ -96,6 +109,20 @@ async def search_pipeline(query: str, number: int, offset: int):
         recipes.append(recipe_dict)
 
     df = pd.DataFrame(recipes)
+
+    # Returnera tomt om Spoonacular inte hittade något
+    if df.empty:
+        return {
+            "recipes": [],
+            "totalResults": 0,
+            "offset": offset,
+            "number": number
+        }
+
+    # samma som i caching sökningen 
+    if "ingredients_normalized" in df.columns:
+        df["ingredients"] = df["ingredients_normalized"]
+    # kör fuzzy search
     matches = has_ingredient(query, df, save=False)
 
     return {
