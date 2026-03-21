@@ -1,3 +1,8 @@
+"""Database connection configuration and pool initialization.
+
+Loads database credentials from environment variables and establishes
+a connection pool using psycopg_pool for the PostgreSQL database.
+"""
 import os
 from psycopg_pool import ConnectionPool
 

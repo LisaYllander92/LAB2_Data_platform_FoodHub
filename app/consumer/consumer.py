@@ -1,3 +1,4 @@
+"""Consume recipe messages from Kafka and store raw data in the staging table."""
 import os
 import json
 import math
@@ -8,9 +9,9 @@ KAFKA_BOOTSTRAP_SERVERS = os.getenv("KAFKA_BOOTSTRAP_SERVERS", "kafka:9092")
 TOPIC = "recipe-request"
 GROUP_ID = "print-request"
 
-# NaN/Inf cleaner
+
 def clean_json(obj):
-    """Recursively replaces NaN/Inf with None for JSON compatibility."""
+    """Recursively replace NaN and Infinity values with None for JSON compatibility."""
     if isinstance(obj, float) and (math.isnan(obj) or math.isinf(obj)):
         return None
     if isinstance(obj, dict):
@@ -19,9 +20,10 @@ def clean_json(obj):
         return [clean_json(i) for i in obj]
     return obj
 
+
 def main():
+    """Initialize Kafka consumer and save incoming messages to the staging table."""
     import time
-    # --- Kafka connection with retry logic ---
     consumer = None
     for attempt in range(10):
         try:
@@ -43,20 +45,17 @@ def main():
         print("Could not connect to Kafka after 10 tries.")
         return
 
-
-    # Ändrad!
-    # --- Save incoming messages to staging ---
-    # Curated saving is handled by recipe_service.py after Spoonacular transform
     for msg in consumer:
-            try:
-                with pool.connection() as conn:
-                    conn.execute(
-                        "INSERT INTO staging_recipes (raw_data) VALUES (%s)",
-                        (json.dumps(clean_json(msg.value)),)
-                    )
-                    print("Saved to staging!")
-            except Exception as e:
-                print(f"Failed to insert to staging: {e}")
+        try:
+            with pool.connection() as conn:
+                conn.execute(
+                    "INSERT INTO staging_recipes (raw_data) VALUES (%s)",
+                    (json.dumps(clean_json(msg.value)),)
+                )
+                print("Saved to staging!")
+        except Exception as e:
+            print(f"Failed to insert to staging: {e}")
+
 
 if __name__ == "__main__":
     main()
