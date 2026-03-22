@@ -6,8 +6,10 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from urllib.parse import unquote
 from app.database import pool
+from app.repositories import recipe_repository
 from app.services.recipe_service import search_pipeline
 from app.producer.producer import send_recipes
+from fastapi import HTTPException
 
 router = APIRouter()
 
@@ -65,23 +67,24 @@ async def search_recipes(
         "offset": result["offset"],
         "number": result["number"]
     }))
-
+@router.get("/recipes/history")
+def get_recipe_history(limit: int = Query(20, le=100)):
+    rows = recipe_repository.get_history(limit)
+    return [
+        {
+            "id": row[0],
+            "title": row[1],
+            "image": row[2],
+            "cooking_minutes": row[3],
+            "servings": row[4],
+            "created_at": row[5].isoformat() if row[5] else None,
+        }
+        for row in rows
+    ]
 @router.get("/recipes/detail/{title}")
 def get_recipe_detail(title: str):
-    """Return full recipe details from curated_recipes by title."""
-    decoded_title = unquote(title)
-    with pool.connection() as conn:
-        with conn.cursor() as cur:
-            cur.execute("""
-                SELECT title, image, cooking_minutes, servings, 
-                       instructions, ingredients, ingredients_normalized
-                FROM curated_recipes
-                WHERE LOWER(title) = LOWER(%s)
-            """, (decoded_title,))
-            row = cur.fetchone()
-
+    row = recipe_repository.get_by_title(unquote(title))
     if not row:
-        from fastapi import HTTPException
         raise HTTPException(status_code=404, detail="Recipe not found")
 
     return {

@@ -6,6 +6,7 @@ the Spoonacular API to minimize token usage and API costs.
 import json
 import pandas as pd
 from app.clients.spoonacular_client import search_recipes, get_recipe_information
+from app.repositories import recipe_repository
 from app.transformers.recipe_transformers import transform_recipe
 from app.services.ingredient_service import has_ingredient
 from app.database import pool
@@ -15,21 +16,7 @@ from rapidfuzz import fuzz
 def save_to_curated(recipe: dict):
     """Save a transformed recipe to the curated table, skipping duplicates."""
     try:
-        with pool.connection() as conn:
-            conn.execute("""
-                INSERT INTO curated_recipes 
-                    (title, image, cooking_minutes, servings, instructions, ingredients, ingredients_normalized)
-                VALUES (%s, %s, %s, %s, %s, %s, %s)
-                ON CONFLICT (title) DO NOTHING
-            """, (
-                recipe.get("title"),
-                recipe.get("image"),
-                recipe.get("cooking_minutes") or recipe.get("ready_in_minutes") or 0,
-                recipe.get("servings"),
-                recipe.get("instructions"),
-                json.dumps(recipe.get("ingredients_raw", [])),
-                json.dumps(recipe.get("ingredients_normalized", []))
-            ))
+        recipe_repository.save_recipe(recipe)
     except Exception as e:
         print(f"Failed to save to curated_recipe: {e}")
 
@@ -44,25 +31,24 @@ async def search_pipeline(query: str, number: int, offset: int):
 
     search_terms = [s.strip() for s in query.replace(",", " ").split() if s.strip()]
 
-    with pool.connection() as conn:
-        with conn.cursor() as cur:
-            conditions = " AND ".join(["ingredients_normalized::text ILIKE %s"] * len(search_terms))
+    cached = recipe_repository.get_cached_by_terms(search_terms, number)
 
-            params =[f"%{term.lower()}%" for term in search_terms] + [number]
-            cur.execute(f"""
-                        SELECT title,
-                               image,
-                               cooking_minutes,
-                               servings,
-                               instructions,
-                               ingredients,
-                               ingredients_normalized
-                        FROM curated_recipes
-                        WHERE {conditions}
-                        AND ingredients_normalized IS NOT NULL
-                        LIMIT %s
-                     """, params)
-            cached = cur.fetchall()
+    # If no exact match, try fuzzy match against all cached ingredients
+    if not cached:
+        all_rows = recipe_repository.get_all_cached()
+
+        cached = []
+        for row in all_rows:
+            ing_list = json.loads(row[6]) if row[6] else []
+            # Check if all fuzzy-search hits any ingredients
+            all_terms_match = all(
+                any(fuzz.partial_ratio(term, ing) >= 80 for ing in ing_list)
+                for term in search_terms
+            )
+            if all_terms_match:
+                cached.append(row)
+
+        cached = cached[:number]
 
     if cached:
         print(f"Cache hit for '{query}' — no API cost.")
