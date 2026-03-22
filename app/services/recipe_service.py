@@ -23,7 +23,7 @@ def save_to_curated(recipe: dict):
             """, (
                 recipe.get("title"),
                 recipe.get("image"),
-                recipe.get("cooking_minutes") or recipe.get("ready_in_minutes"),
+                recipe.get("cooking_minutes") or recipe.get("ready_in_minutes") or 0,
                 recipe.get("servings"),
                 recipe.get("instructions"),
                 json.dumps(recipe.get("ingredients_raw", [])),
@@ -43,11 +43,18 @@ async def search_pipeline(query: str, number: int, offset: int):
     with pool.connection() as conn:
         with conn.cursor() as cur:
             cur.execute("""
-                SELECT title, image, cooking_minutes, servings, instructions, ingredients, ingredients_normalized
-                FROM curated_recipes
-                WHERE LOWER(title) LIKE %s
-                LIMIT %s
-            """, (f"%{query.lower()}%", number))
+                        SELECT title,
+                               image,
+                               cooking_minutes,
+                               servings,
+                               instructions,
+                               ingredients,
+                               ingredients_normalized
+                        FROM curated_recipes
+                        WHERE ingredients_normalized::text ILIKE %s
+                          AND ingredients_normalized IS NOT NULL
+                            LIMIT %s
+                        """, (f"%{query.lower()}%", number))
             cached = cur.fetchall()
 
     if cached:
@@ -59,9 +66,9 @@ async def search_pipeline(query: str, number: int, offset: int):
                 "cooking_minutes": r[2],
                 "servings": r[3],
                 "instructions": r[4],
-                "ingredients_raw": json.loads(r[5]) if r[5] else [],
-                "ingredients_normalized": json.loads(r[6]) if r[6] else [],
-                "ingredients": json.loads(r[6]) if r[6] else []
+                "ingredients_raw": (r[5]) if r[5] else [],
+                "ingredients_normalized": (r[6]) if r[6] else [],
+                "ingredients": (r[6]) if r[6] else []
             }
             for r in cached
         ]
