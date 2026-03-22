@@ -25,7 +25,12 @@ app.include_router(recipe_router, prefix="/api")
 
 
 @app.get("/", response_class=HTMLResponse)
-def read_root():
+def serve_frontend(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
+
+
+@app.get("/health")
+def health():
     """Health check endpoint to verify that the API is up and running."""
     return {"message": "FoodHub is running"}
 
