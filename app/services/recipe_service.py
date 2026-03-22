@@ -40,9 +40,15 @@ async def search_pipeline(query: str, number: int, offset: int):
     If cached results are found, returns them directly without API cost.
     Otherwise fetches from Spoonacular, transforms, saves to curated, and returns.
     """
+
+    search_terms = [s.strip() for s in query.replace(",", " ").split() if s.strip()]
+
     with pool.connection() as conn:
         with conn.cursor() as cur:
-            cur.execute("""
+            conditions = " AND ".join(["ingredients_normalized::text ILIKE %s"] * len(search_terms))
+
+            params =[f"%{term.lower()}%" for term in search_terms] + [number]
+            cur.execute(f"""
                         SELECT title,
                                image,
                                cooking_minutes,
@@ -51,10 +57,10 @@ async def search_pipeline(query: str, number: int, offset: int):
                                ingredients,
                                ingredients_normalized
                         FROM curated_recipes
-                        WHERE ingredients_normalized::text ILIKE %s
-                          AND ingredients_normalized IS NOT NULL
-                            LIMIT %s
-                        """, (f"%{query.lower()}%", number))
+                        WHERE {conditions}
+                        AND ingredients_normalized IS NOT NULL
+                        LIMIT %s
+                     """, params)
             cached = cur.fetchall()
 
     if cached:
@@ -66,8 +72,8 @@ async def search_pipeline(query: str, number: int, offset: int):
                 "cooking_minutes": r[2],
                 "servings": r[3],
                 "instructions": r[4],
-                "ingredients_raw": (r[5]) if r[5] else [],
-                "ingredients_normalized": (r[6]) if r[6] else [],
+                "ingredients_raw": json.loads(r[5]) if r[5] else [],
+                "ingredients_normalized": json.loads(r[6]) if r[6] else [],
                 "ingredients": (r[6]) if r[6] else []
             }
             for r in cached
