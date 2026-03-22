@@ -3,9 +3,13 @@ let ingredients = [];
 
 async function doSearch() {
     const q = document.getElementById('query').value.trim();
-    if (!q) return;
 
-    ingredients = q.split(/[,\s]+/).map(s => s.trim().toLowerCase()).filter(Boolean);
+    if (ingredients.length === 0) {
+        if (!q) return;
+           ingredients = q.split(/[,\s]+/).map(s => s.trim().toLowerCase()).filter(Boolean);
+    }
+    document.getElementById('query').value = ingredients.join(', ');
+
     renderChips();
 
 
