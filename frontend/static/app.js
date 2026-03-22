@@ -5,13 +5,17 @@ let lastResults = [];
 async function doSearch() {
     const q = document.getElementById('query').value.trim();
 
-    if (ingredients.length === 0) {
-        if (!q) return;
-           ingredients = q.split(/[,\s]+/).map(s => s.trim().toLowerCase()).filter(Boolean);
+    if (q)
+    {
+        ingredients = q.split(/[,\s]+/).map(s => s.trim().toLowerCase()).filter(Boolean);
+        document.getElementById('query').value = '';
+    } else if (ingredients.length === 0) {
+        return;
     }
-
-    //quick input sync
-    document.getElementById('query').value = ingredients.join(', ');
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelector('.tab[onclick*="search"]').classList.add('active');
+    document.getElementById('tab-search').classList.add('active');
 
     renderChips();
 
@@ -48,12 +52,18 @@ function renderChips() {
     if (!ingredients.length) { section.style.display = 'none'; return; }
     section.style.display = 'block';
     container.innerHTML =
-    ingredients.map(ing =>
-      `<span class="chip">${ing}
-        <button onclick="removeIngredient('${ing}')" aria-label="Ta bort ${ing}">×</button>
-      </span>`
-    ).join('') +
-    `<span class="chip chip-add" onclick="addIngredient()">+ lägg till</span>`;
+        ingredients.map(ing =>
+            `<span class="chip">${ing}
+            <button onclick="removeIngredient('${ing}')" aria-label="Ta bort ${ing}">×</button>
+            </span>`
+        ).join('') +
+    `<span class="chip chip-add" id="add-chip" onclick="showAddInput()">+ lägg till</span>
+     <span class="chip chip-input" id="add-input-chip" style="display:none">
+       <input id="add-input" type="text" placeholder="ingrediens..."
+              style="border:none;background:transparent;outline:none;font-family:inherit;font-size:13px;width:100px;color:inherit"
+              onkeydown="handleAddKey(event)" />
+       <button onclick="confirmAdd()" aria-label="Lägg till">↵</button>
+     </span>`;
 }
 
 function removeIngredient(name) {
@@ -61,12 +71,29 @@ function removeIngredient(name) {
   renderChips();
 }
 
-function addIngredient() {
-  const name = prompt('Lägg till ingrediens:');
-  if (name && name.trim()) {
-    ingredients.push(name.trim().toLowerCase());
+
+function showAddInput() {
+  document.getElementById('add-chip').style.display = 'none';
+  document.getElementById('add-input-chip').style.display = 'inline-flex';
+  document.getElementById('add-input').focus();
+}
+
+function confirmAdd() {
+  const input = document.getElementById('add-input');
+  const val = input.value.trim();
+  if (val)
+   {
+    ingredients.push(val.toLowerCase());
     renderChips();
-  }
+    doSearch();
+   } else{
+   renderChips();
+   }
+}
+
+function handleAddKey(e) {
+  if (e.key === 'Enter') confirmAdd();
+  if (e.key === 'Escape') renderChips(); // cancel
 }
 
 function computeMatch(list) {

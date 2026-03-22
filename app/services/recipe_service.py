@@ -9,6 +9,7 @@ from app.clients.spoonacular_client import search_recipes, get_recipe_informatio
 from app.transformers.recipe_transformers import transform_recipe
 from app.services.ingredient_service import has_ingredient
 from app.database import pool
+from rapidfuzz import fuzz
 
 
 def save_to_curated(recipe: dict):

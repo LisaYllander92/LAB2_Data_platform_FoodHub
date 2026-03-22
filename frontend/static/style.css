@@ -171,6 +171,13 @@ body {
   font-size: 14px; line-height: 1.8;
   color: var(--text); white-space: pre-wrap;
 }
+.chip-input {
+  background: var(--brand-light);
+  border-radius: 20px;
+  padding: 5px 10px;
+  color: var(--brand-darker);
+  font-weight: 500;
+}
 
 @keyframes bounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-9px)} }
 @keyframes fadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
