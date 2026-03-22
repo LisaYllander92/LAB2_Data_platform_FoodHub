@@ -20,7 +20,7 @@ class Recipe(BaseModel):
 @router.post("/recipes")
 async def create_recipe(recipe: Recipe):
     """Send a newly created recipe object to the Kafka topic."""
-    send_recipes(recipe.dict())
+    send_recipes(recipe.model_dump())
     return {"status": "Recipe sent to Kafka", "data": recipe}
 
 
