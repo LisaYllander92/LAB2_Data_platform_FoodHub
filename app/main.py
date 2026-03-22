@@ -1,23 +1,36 @@
 """Main FastAPI application entry point for the FoodHub API.
 
-Initializes the application, registers routers for specific API endpoints, 
+Initializes the application, registers routers for specific API endpoints,
 and sets up global exception handling.
 """
 import os
 import traceback
 from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
-
+from fastapi.responses import JSONResponse, HTMLResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 from app.api.recipe_routes import router as recipe_router
+from pathlib import Path
 
+ROOT_DIR = Path(__file__).resolve().parent.parent
+FRONTEND_DIR = ROOT_DIR / "frontend"
 KAFKA_BOOTSTRAP_SERVERS = os.getenv("KAFKA_BOOTSTRAP_SERVERS", "kafka:9092")
 
 app = FastAPI(title="FoodHub API")
+
+app.mount("/static", StaticFiles(directory=FRONTEND_DIR / "static"), name="static")
+templates = Jinja2Templates(directory=FRONTEND_DIR / "templates")
+
 app.include_router(recipe_router, prefix="/api")
 
 
-@app.get("/")
-def read_root():
+@app.get("/", response_class=HTMLResponse)
+def serve_frontend(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
+
+
+@app.get("/health")
+def health():
     """Health check endpoint to verify that the API is up and running."""
     return {"message": "FoodHub is running"}
 

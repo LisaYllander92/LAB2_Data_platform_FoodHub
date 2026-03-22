@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FoodHub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+<div id="app">
+  <div class="shell">
+
+    <div class="topbar">
+      <div class="logo">Food<span>Hub</span></div>
+      <div class="search-row">
+        <div class="search-wrap">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8">
+            <circle cx="8.5" cy="8.5" r="5.5"/>
+            <line x1="13" y1="13" x2="17.5" y2="17.5"/>
+          </svg>
+          <input id="query" type="text" placeholder="pasta, chicken, tomato..." />
+        </div>
+        <button class="btn-search" id="btn-search" onclick="doSearch()">Sök</button>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('search', this)">Recept</button>
+      <button class="tab" onclick="switchTab('history', this)">Historik</button>
+    </div>
+
+    <div class="content">
+      <div id="tab-search" class="tab-panel active">
+        <div id="chips-section" style="display:none">
+          <div class="section-label">Mina ingredienser</div>
+          <div class="chips" id="chips"></div>
+        </div>
+        <div id="results"></div>
+      </div>
+
+      <div id="tab-detail" class="tab-panel">
+        <div id="detail-content"></div>
+      </div>
+      <div id="tab-history" class="tab-panel">
+        <div id="history"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+<script src="/static/app.js"></script>
+</body>
+</html>
