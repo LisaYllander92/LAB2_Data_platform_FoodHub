@@ -23,7 +23,7 @@ def save_to_curated(recipe: dict):
             """, (
                 recipe.get("title"),
                 recipe.get("image"),
-                recipe.get("cooking_minutes") or recipe.get("ready_in_minutes"),
+                recipe.get("cooking_minutes") or recipe.get("ready_in_minutes") or 0,
                 recipe.get("servings"),
                 recipe.get("instructions"),
                 json.dumps(recipe.get("ingredients_raw", [])),
