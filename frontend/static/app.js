@@ -1,5 +1,6 @@
 const API = '/api';
 let ingredients = [];
+let lastResults = [];
 
 async function doSearch() {
     const q = document.getElementById('query').value.trim();
@@ -8,6 +9,8 @@ async function doSearch() {
         if (!q) return;
            ingredients = q.split(/[,\s]+/).map(s => s.trim().toLowerCase()).filter(Boolean);
     }
+
+    //quick input sync
     document.getElementById('query').value = ingredients.join(', ');
 
     renderChips();
@@ -17,8 +20,10 @@ async function doSearch() {
     btn.disabled = true;
     btn.textContent = 'Söker...';
     document.getElementById('results').innerHTML = loadingHTML();
+
     try {
-        const params = new URLSearchParams({ query: q, number: 5 });
+        const searchQuery = ingredients.join(', ');
+        const params = new URLSearchParams({ query: searchQuery, number: 5 }); // decides params for the search
         const res = await fetch(`${API}/recipes/search?${params}`);
         if (!res.ok) throw new Error(`Fel ${res.status}`);
         const data = await res.json();
@@ -85,17 +90,17 @@ function renderResults(recipes, total) {
     return;
   }
 
-  const enriched = recipes.map(r => {
+  lastResults = recipes.map(r => {
     const { matched, total } = computeMatch(r.ingredients || []);
     return { ...r, matched, total };
   }).sort((a, b) => (b.matched / (b.total || 1)) - (a.matched / (a.total || 1)));
 
-  const cards = enriched.map(r => {
+  const cards = lastResults.map((r, index) => {
     const pct = r.total > 0 ? Math.round((r.matched / r.total) * 100) : 0;
     const cls = r.total > 0 ? pillCls(r.matched / r.total) : '';
     const time = r.cooking_minutes || r.ready_in_minutes || 0;
     return `
-      <div class="recipe-card">
+      <div class="recipe-card" onclick="openRecipe(lastResults[${index}].title)" style="cursor:pointer">
         <div class="rc-top">
           <div class="rc-title">${r.title}</div>
           ${r.total > 0 ? `<span class="pill ${cls}">${r.matched}/${r.total}</span>` : ''}
@@ -145,7 +150,7 @@ async function loadHistory() {
   const el = document.getElementById('history');
   el.innerHTML = loadingHTML();
   try {
-    const res = await fetch(`${API}/recipes/history?limit=20`);
+    const res = await fetch(`${API}/recipes/history?limit=20`); // TODO: add this route when history func is added later
     if (!res.ok) throw new Error(`Fel ${res.status}`);
     const data = await res.json();
     if (!data.length) {
@@ -154,8 +159,8 @@ async function loadHistory() {
     }
     el.innerHTML =
       `<div class="section-label" style="margin-bottom:10px">Senast sökta recept</div>` +
-      data.map(r => `
-        <div class="history-item">
+      data.map((r, i) => `
+        <div class="history-item" onclick="openRecipe(this.dataset.title)" data-title="${r.title.replace(/"/g, '&quot;')}">
           <div class="hi-left">
             <div class="hi-icon">${emojiFor(r.title)}</div>
             <div>
@@ -189,3 +194,47 @@ function emptyHTML(icon, text) {
 }
 
 document.getElementById('results').innerHTML = emptyHTML('🍳', 'Sök på ingredienser du har hemma<br>så hittar vi recept åt dig.');
+
+async function openRecipe(title) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-detail').classList.add('active');
+  document.getElementById('detail-content').innerHTML = loadingHTML();
+
+  try {
+    const res = await fetch(`${API}/recipes/detail/${encodeURIComponent(title)}`);
+    if (!res.ok) throw new Error(`Fel ${res.status}`);
+    const r = await res.json();
+    renderDetail(r);
+  } catch (e) {
+    document.getElementById('detail-content').innerHTML =
+      `<div class="error">${e.message}</div>`;
+  }
+}
+
+
+function renderDetail(r) {
+  const ingredients = (r.ingredients_raw && r.ingredients_raw.length)
+    ? r.ingredients_raw
+    : r.ingredients_normalized || [];
+
+  document.getElementById('detail-content').innerHTML = `
+    <button class="btn-back" onclick="closeDetail()">← Tillbaka</button>
+    ${r.image ? `<img src="${r.image}" alt="${r.title}" class="detail-img" />` : ''}
+    <h2 class="detail-title">${r.title}</h2>
+    <div class="rc-meta" style="margin-bottom:16px">
+      ${r.cooking_minutes > 0 ? `<span>⏱ ${r.cooking_minutes} min</span>` : ''}
+      ${r.servings > 0 ? `<span>👤 ${r.servings} portioner</span>` : ''}
+    </div>
+    <div class="section-label" style="margin-bottom:8px">Ingredienser</div>
+    <ul class="ingredient-list">
+      ${ingredients.map(i => `<li>${i}</li>`).join('')}
+    </ul>
+    <div class="section-label" style="margin-top:16px; margin-bottom:8px">Instruktioner</div>
+    <div class="instructions">${r.instructions || 'Inga instruktioner tillgängliga.'}</div>
+  `;
+}
+
+function closeDetail() {
+  document.getElementById('tab-detail').classList.remove('active');
+  document.getElementById('tab-search').classList.add('active');
+}

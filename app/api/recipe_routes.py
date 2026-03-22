@@ -1,9 +1,11 @@
 """API router for recipe-related endpoints and Kafka integration."""
+import json
 import math
 from fastapi import APIRouter, Query
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-
+from urllib.parse import unquote
+from app.database import pool
 from app.services.recipe_service import search_pipeline
 from app.producer.producer import send_recipes
 
@@ -63,3 +65,31 @@ async def search_recipes(
         "offset": result["offset"],
         "number": result["number"]
     }))
+
+@router.get("/recipes/detail/{title}")
+def get_recipe_detail(title: str):
+    """Return full recipe details from curated_recipes by title."""
+    decoded_title = unquote(title)
+    with pool.connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT title, image, cooking_minutes, servings, 
+                       instructions, ingredients, ingredients_normalized
+                FROM curated_recipes
+                WHERE LOWER(title) = LOWER(%s)
+            """, (decoded_title,))
+            row = cur.fetchone()
+
+    if not row:
+        from fastapi import HTTPException
+        raise HTTPException(status_code=404, detail="Recipe not found")
+
+    return {
+        "title": row[0],
+        "image": row[1],
+        "cooking_minutes": row[2],
+        "servings": row[3],
+        "instructions": row[4],
+        "ingredients_raw": json.loads(row[5]) if row[5] else [],
+        "ingredients_normalized": json.loads(row[6]) if row[6] else [],
+    }
