@@ -3,6 +3,9 @@
 Loads database credentials from environment variables and establishes
 a connection pool using psycopg_pool for the PostgreSQL database.
 """
+from dotenv import load_dotenv
+load_dotenv()
+
 import os
 from psycopg_pool import ConnectionPool
 
