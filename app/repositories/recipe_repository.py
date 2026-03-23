@@ -2,7 +2,7 @@ import json
 from app.database import pool
 
 def get_cached_by_terms(search_terms: list[str], limit: int):
-    conditions = " AND ".join(
+    conditions = " OR ".join(
         ["ingredients_normalized::text ILIKE %s"] * len(search_terms)
     )
     params = [f"%{term.lower()}%" for term in search_terms] + [limit]
@@ -68,3 +68,18 @@ def get_by_title(title: str):
                 WHERE LOWER(title) = LOWER(%s)
             """, (title,))
             return cur.fetchone()
+
+
+#@router.get("/recipes/popular-searches")
+def get_popular_searches():
+    with pool.connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT query, COUNT(*) AS search_count
+                FROM search_log
+                GROUP BY query
+                ORDER BY search_count DESC, query ASC
+                LIMIT 10
+            """)
+            rows = cur.fetchall()
+    return [{"query": row[0], "count": row[1]} for row in rows]

@@ -37,7 +37,8 @@ async def search_pipeline(query: str, number: int, offset: int):
         cached = []
         for row in all_rows:
             ing_list = json.loads(row[6]) if row[6] else []
-            all_terms_match = all(
+            # Check if all fuzzy-search hits any ingredients
+            all_terms_match = any(
                 any(fuzz.partial_ratio(term, ing) >= 80 for ing in ing_list)
                 for term in search_terms
             )

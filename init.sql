@@ -64,3 +64,9 @@ CREATE TABLE IF NOT EXISTS search_event_ingredients (
     ingred_id INT REFERENCES ingredients(ingred_id),
     PRIMARY KEY (search_id, ingred_id)
 );
+
+CREATE TABLE IF NOT EXISTS search_log (
+    id SERIAL PRIMARY KEY,
+    query VARCHAR(255) NOT NULL,
+    searched_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
