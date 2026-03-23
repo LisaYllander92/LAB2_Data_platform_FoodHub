@@ -2,7 +2,7 @@ import json
 from app.database import pool
 
 def get_cached_by_terms(search_terms: list[str], limit: int):
-    conditions = " AND ".join(
+    conditions = " OR ".join(
         ["ingredients_normalized::text ILIKE %s"] * len(search_terms)
     )
     params = [f"%{term.lower()}%" for term in search_terms] + [limit]

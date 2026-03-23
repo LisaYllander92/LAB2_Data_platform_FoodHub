@@ -64,13 +64,23 @@ def has_ingredient(search: str, df: pd.DataFrame = None, save: bool = True) -> p
         df = pd.read_json(BASE_DIR / "data" / "cleaning_recipe.json")
 
     search_terms = [s.strip() for s in search.replace(",", " ").split()]
-    mask = pd.Series([True] * len(df), index=df.index)
+    #mask = pd.Series([True] * len(df), index=df.index)
 
-    for term in search_terms:
-        match = df["ingredients"].apply(contains_search, search=term)
-        mask = mask & match
+    # for term in search_terms:
+    #     match = df["ingredients"].apply(contains_search, search=term)
+    #     mask = mask & match
 
-    matches = df[mask]
+    #    matches = df[mask]
+
+    # Count how many terms match per recipe and sort by most matches
+    df["match_count"] = sum(
+        df["ingredients"].apply(contains_search, search=term).astype(int)
+        for term in search_terms
+    )
+
+    # Filter out recipes with 0 matches and sort by most matches first
+    matches = df[df["match_count"] > 0].sort_values("match_count", ascending=False)
+    matches = matches.drop(columns=["match_count"])
 
     if save and loaded_from_disk:
         output_path = BASE_DIR / "data" / "filtered" / "search_recipe.json"
