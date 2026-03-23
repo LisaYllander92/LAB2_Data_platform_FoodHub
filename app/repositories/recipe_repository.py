@@ -83,3 +83,48 @@ def get_popular_searches():
             """)
             rows = cur.fetchall()
     return [{"query": row[0], "count": row[1]} for row in rows]
+def mark_viewed(title: str):
+    with pool.connection() as conn:
+        conn.execute("""
+            UPDATE curated_recipes
+            SET last_viewed_at = CURRENT_TIMESTAMP
+            WHERE LOWER(title) = LOWER(%s)
+        """, (title,))
+
+
+def get_stats():
+    with pool.connection() as conn:
+        with conn.cursor() as cur:
+            # Popular searches
+            cur.execute("""
+                SELECT query, COUNT(*) AS search_count
+                FROM search_log
+                GROUP BY query
+                ORDER BY search_count DESC
+                LIMIT 10
+            """)
+            popular = [{"query": row[0], "count": row[1]} for row in cur.fetchall()]
+
+            # Most viewed recipes
+            cur.execute("""
+                SELECT title, cooking_minutes, servings
+                FROM curated_recipes
+                WHERE last_viewed_at IS NOT NULL
+                ORDER BY last_viewed_at DESC
+                LIMIT 5
+            """)
+            recent = [{"title": row[0], "cooking_minutes": row[1], "servings": row[2]} for row in cur.fetchall()]
+
+            # Total counts
+            cur.execute("SELECT COUNT(*) FROM curated_recipes")
+            total_recipes = cur.fetchone()[0]
+
+            cur.execute("SELECT COUNT(*) FROM search_log")
+            total_searches = cur.fetchone()[0]
+
+    return {
+        "popular": popular,
+        "recent": recent,
+        "total_recipes": total_recipes,
+        "total_searches": total_searches
+    }
