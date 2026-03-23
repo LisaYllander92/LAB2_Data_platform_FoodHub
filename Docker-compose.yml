@@ -1,19 +1,19 @@
 # Contains a list of abstract-multi-containers
 services:
-  postgres:
-    image: postgres:16
-    container_name: postgres
+  # postgres:
+  #   image: postgres:16
+  #   container_name: postgres
 
-    # Points to .env variables
-    environment:
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: ${DB_NAME}
-    ports:
-      - "5432:5432"
-    volumes:
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
-      - postgres_data:/var/lib/postgresql/data
+  #   # Points to .env variables
+  #   environment:
+  #     POSTGRES_USER: ${DB_USER}
+  #     POSTGRES_PASSWORD: ${DB_PASSWORD}
+  #     POSTGRES_DB: ${DB_NAME}
+  #   ports:
+  #     - "5432:5432"
+  #   volumes:
+  #     - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+  #     - postgres_data:/var/lib/postgresql/data
 
   kafka:
       image: apache/kafka:4.1.1
@@ -59,7 +59,7 @@ services:
       PYTHONPATH: /app
     depends_on:
       - kafka
-      - postgres
+      # - postgres
     command: [ "uv", "run", "python", "-u", "app/consumer/consumer.py" ]
 
   app:
@@ -67,8 +67,8 @@ services:
     env_file:
       - .env
     depends_on:
-      postgres:
-        condition: service_started
+      # postgres:
+      #   condition: service_started
       kafka:
         condition: service_started
     ports:
@@ -76,5 +76,5 @@ services:
 
 # Make PostgreSQL stateful
 volumes:
-  postgres_data:
+  # postgres_data:
   kafka_data: # Is this truly necessary?
