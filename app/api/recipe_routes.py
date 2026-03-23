@@ -99,9 +99,12 @@ def get_recipe_history(limit: int = Query(20, le=100)):
 
 @router.get("/recipes/detail/{title}")
 def get_recipe_detail(title: str):
+    decoded = unquote(title)
     row = recipe_repository.get_by_title(unquote(title))
     if not row:
         raise HTTPException(status_code=404, detail="Recipe not found")
+
+    recipe_repository.mark_viewed(decoded)
     return {
         "title": row[0],
         "image": row[1],
@@ -122,3 +125,9 @@ def get_search_plot():
     if not img:
         raise HTTPException(status_code=404, detail="No data to display")
     return Response(content=img, media_type="image/png")
+
+@router.get("/recipes/stats")
+def get_stats():
+    data = recipe_repository.get_stats()
+    send_recipes({"event": "stats_viewed", "data": data})
+    return data
