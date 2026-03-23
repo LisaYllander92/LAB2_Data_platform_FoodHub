@@ -19,6 +19,7 @@ KAFKA_BOOTSTRAP_SERVERS = os.getenv("KAFKA_BOOTSTRAP_SERVERS", "kafka:9092")
 app = FastAPI(title="FoodHub API")
 
 app.mount("/static", StaticFiles(directory=FRONTEND_DIR / "static"), name="static")
+app.mount("/images", StaticFiles(directory=ROOT_DIR / "images"), name="images")
 templates = Jinja2Templates(directory=FRONTEND_DIR / "templates")
 
 app.include_router(recipe_router, prefix="/api")
