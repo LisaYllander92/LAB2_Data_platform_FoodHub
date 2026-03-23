@@ -1,6 +1,3 @@
-# To run Docker Compose:
-# $ docker compose up --build
-
 # Contains a list of abstract-multi-containers
 services:
   postgres:
@@ -21,12 +18,8 @@ services:
   kafka:
       image: apache/kafka:4.1.1
       container_name: kafka_foodhub
-      #ports:
-        # host -> kafka (for tools running on your laptop)
-       # - "29092:29092"
       volumes:
         - kafka_data:/var/lib/kafka/data
-        #- kafka_data:/bitnami
       environment:
         KAFKA_NODE_ID: "1"
         KAFKA_PROCESS_ROLES: "broker,controller"

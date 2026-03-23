@@ -14,11 +14,11 @@ def plot_popular_searches() -> bytes:
     counts = [d["count"] for d in data]
 
     fig, ax = plt.subplots(figsize=(10, 5))
-    ax.bar(queries, counts, color="#1D9E75")  # ← barh → bar
-    ax.set_ylabel("Number of searches")       # ← xlabel → ylabel
-    ax.set_xlabel("Ingredients")              # ← lägg till
+    ax.bar(queries, counts, color="blue")
+    ax.set_ylabel("Number of searches")
+    ax.set_xlabel("Ingredients")
     ax.set_title("Most popular searches")
-    plt.xticks(rotation=45, ha="right")       # ← snedställ etiketterna
+    plt.xticks(rotation=45, ha="right")
     plt.tight_layout()
 
     buf = io.BytesIO()
