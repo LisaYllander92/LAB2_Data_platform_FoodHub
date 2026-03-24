@@ -185,3 +185,28 @@ body {
 
 @keyframes bounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-9px)} }
 @keyframes fadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+.stats-cards {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 18px;
+}
+.stat-card {
+  background: var(--surface); border: 0.5px solid var(--border);
+  border-radius: var(--r-lg); padding: 16px; text-align: center;
+}
+.stat-value {
+  font-family: 'Playfair Display', serif; font-size: 32px;
+  font-weight: 600; color: var(--brand);
+}
+.stat-label {
+  font-size: 11px; color: var(--muted); margin-top: 4px;
+}
+.chart-legend {
+  display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px;
+}
+.legend-item {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 12px; color: var(--muted);
+}
+.legend-dot {
+  width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+}
