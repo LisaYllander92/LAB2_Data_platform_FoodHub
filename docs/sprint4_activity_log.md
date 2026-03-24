@@ -71,3 +71,5 @@
 * All core features complete and verified.
 * Documentation updated (README, REQUIREMENTS.md, activity log).
 * Final presentation in progress.
+
+[⬅ Back to Main README](../README.md)

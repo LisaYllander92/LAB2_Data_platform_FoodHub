@@ -14,7 +14,7 @@ Save money, cut waste, and satisfy your cravings – zero planning required.*
 * **Ranking Logic:** Recipe suggestions are ranked by the number of matching ingredients.
 * **Cache-First Strategy:** Checks the database before calling the Spoonacular API to minimize API costs.
 * **Search Statistics:** Tracks and visualizes the most popular ingredient searches using Matplotlib.
-* **Frontend:** A lightweight web interface for searching recipes and viewing history.
+* **Frontend:** A lightweight web interface for searching recipes and viewing history and search statistic.
 
 ---
 
@@ -104,8 +104,9 @@ docker compose up --build
 
 ### 📊 Data Modeling
 *Click the links below to view our models:*
-- [Conceptual Model](docs/Conceptual_model.png)
-- [Logical Model](docs/Logical_model.png)
+- [Conceptual Model](images/Conceptual_model.png)
+- [First logical Model](images/Logical_model.png)
+- [Final logical model](images/final_logical_model.png)
 
 ### 🔄 Agile Process & Logs
 **Sprint 1**
@@ -119,3 +120,10 @@ docker compose up --build
 **Sprint 3**
 - [Activity Log](docs/sprint3_activity_log.md)
 - [Retrospective](docs/sprint3_retrospective.md)
+
+**Sprint 4**
+- [Activity Log](docs/sprint4_activity_log.md)
+- [Retrospective](docs/sprint4_retrospective.md)
+
+**Sources**
+- [Sources & AI usage](docs/foodhub_sources.pdf)
