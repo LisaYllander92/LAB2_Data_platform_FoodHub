@@ -19,15 +19,35 @@ Save money, cut waste, and satisfy your cravings – zero planning required.*
 ---
 
 ## 🏗️ Architecture & Data Flow
-The system follows a modern **Data Engineering** pipeline to ensure data quality and scalability:
+![Foodhub Ecosystem](images/foodhub_ecosystem.png)
 
-1. **Ingestion (The Producer):** FastAPI acts as the Producer. It fetches recipe data from the Spoonacular API and pushes the results as events into a Kafka topic.
-2. **Streaming:** ***Apache Kafka*** acts as the central broker, safely buffering these search results as asynchronous JSON payloads.
-3. **Processing (The Consumer):** A dedicated ***Kafka Consumer*** service listens to the stream. It validates data types and saves raw payloads to the staging layer.
-4. **Storage (Medallion Architecture):** Data is persisted into two distinct layers in **Supabase (PostgreSQL)**:
-    - `staging_recipes`: Stores raw JSON payloads for historical auditing and backup.
-    - `curated_recipes`: Stores cleaned, structured, and validated data ready for the frontend.
-5. **Statistics:** Search queries are logged in `search_log` and visualized as bar charts via Matplotlib.
+The system is built as a modern data engineering pipeline within a **Docker Compose environment**, 
+ensuring seamless communication between microservices, streaming components, and cloud storage:
+
+### 1. **User Interaction & Frontend**
+The journey begins at the **Frontend (localhost:8000)**. Users can search for recipes by ingredients, 
+view their search history, and access data insights through automated **Matplotlib** visualizations.
+
+### 2. **FastAPI: The Orchestrator**
+The backend acts as the system's brain, managing the flow of data:
+* **Fuzzy Search:** Uses **RapidFuzz** to handle typos, ensuring "chiken" still returns "chicken" recipes.
+* **Database Connectivity:** Leverages **psycopg** for high-performance communication with the Supabase instance.
+* **Smart Caching:** FastAPI first checks the `curated_recipes` table. On a "cache hit," data is returned instantly to save API tokens. 
+On a "miss," it fetches fresh data from the **Spoonacular API**.
+
+### 3. **The Streaming Pipeline (Kafka)**
+To ensure asynchronous processing and scalability, we utilize **Apache Kafka**:
+* **Producer:** When new data is fetched from Spoonacular, FastAPI acts as a Producer, pushing the results as events into the **Kafka Cluster**.
+* **Consumer:** A dedicated **Kafka Consumer** listens to the stream, reads the incoming data, and persists the raw payloads into the staging layer.
+
+### 4. **Storage Layer (Supabase / PostgreSQL)**
+Data is persisted into three distinct functional layers within **Supabase** to separate concerns:
+* **`staging_recipes` (Raw Data):** Stores untreated JSON payloads from Kafka for historical auditing and backup.
+* **`curated_recipes` (Validated Data):** Holds cleaned, structured, and validated recipe data, optimized for frontend performance.
+* **`search_log` (Analytics):** Logs user search queries (ingredients) to provide the data source for search frequency statistics.
+
+### 5. **Data Transformation**
+Throughout the flow, **Pandas** is used to clean, filter, and validate the data, ensuring that only high-quality, structured information moves from the staging area to the curated layer.
 
 ---
 
