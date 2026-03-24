@@ -29,3 +29,25 @@
 ## Current Status
 * Cache-first pipeline fully functional and verified.
 * **In Progress:** #48 (Search Statistics), frontend HTML, ingredient statistics endpoint.
+
+---
+
+## March 23 – Daily Standup (Monday)
+
+---
+
+## Team Activities
+| Who              | Activity |
+|------------------|----------|
+| Filippa          | Started working on #48 |
+| Lisa             | Assisted Filippa with implementation of #48 |
+| Team             | Discussed approach for recipe matching and search history |
+| Julius & Rickard | Debugged cache pipeline |
+| Anton            | Set up frontend |
+| Julius           | Set up Supabase |
+| Filippa & Lisa   | Implemented statistics using Matplotlib and created new table |
+| Team             | Verified that cache-first pipeline is working |
+| Team             | Confirmed frontend is running |
+| Team             | Confirmed statistics functionality and database table are working |
+
+---
