@@ -16,6 +16,35 @@ Save money, cut waste, and satisfy your cravings – zero planning required.*
 * **Search Statistics:** Tracks and visualizes the most popular ingredient searches using Matplotlib.
 * **Frontend:** A lightweight web interface for searching recipes and viewing history and search statistic.
 
+## 📂 Project Structure
+The project is organized into a modular directory structure to ensure a clean separation of concerns between the API, data processing, and infrastructure.
+
+```text
+.
+├── app/                      # Core application (FastAPI)
+│   ├── api/                  # API endpoints (routes)
+│   ├── clients/              # External API clients (Spoonacular)
+│   ├── consumer/             # Kafka Consumer (listens and saves data)
+│   ├── producer/             # Kafka Producer (sends messages)
+│   ├── repositories/         # Database operations
+│   ├── schema/               # Pydantic models (internal & external)
+│   ├── services/             # Business logic (search, filtering)
+│   └── transformers/         # Data transformation logic
+├── data/                     # Data cleaning and validation scripts
+│   ├── cleaning_recipe.py    # Logic for cleaning recipe data
+│   └── flagged_recipe.py     # Logic for handling invalid data
+├── docs/                     # Architecture models and sprint logs
+├── frontend/                 # Web interface (HTML, CSS, JS)
+├── database.py               # Database connection pool (PostgreSQL)
+├── main.py                   # FastAPI application entry point
+├── docker-compose.yml        # Infrastructure and container orchestration
+├── Dockerfile                # Backend build instructions
+├── init.sql                  # Database initialization script
+├── pyproject.toml            # Project metadata and dependencies (uv)
+├── uv.lock                   # Dependency lock file
+├── README.md                 # Project documentation and setup guide
+└── REQUIREMENTS.md           # Detailed project requirements
+```
 ---
 
 ## 🏗️ Architecture & Data Flow
