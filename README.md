@@ -148,31 +148,35 @@ docker compose up --build
 
 ---
 
-## 👀 Behind the scenes 
-*Detailed documentation of our architectural design and agile development process:*
+## 👀 Behind the Scenes 
+
+Detailed documentation of our architectural design and agile development process.
+
+---
 
 ### 📊 Data Modeling
-*Click the links below to view our models:*
-- [Conceptual Model](images/Conceptual_model.png)
-- [First logical Model](images/Logical_model.png)
-- [Final logical model](images/final_logical_model.png)
+*Visualizing our database structure from concept to final implementation.*
+
+| Phase | View Model |
+| :--- | :--- |
+| **Step 1: Conceptual** | [🔗 View Conceptual Model](images/Conceptual_model.png) |
+| **Step 2: Initial Logical** | [🔗 View First Logical Model](images/Logical_model.png) |
+| **Step 3: Final Implementation** | [🔗 View Final Logical Model](images/final_logical_model.png) |
+
+---
 
 ### 🔄 Agile Process & Logs
-**Sprint 1**
-- [Activity Log](docs/sprint1_activity_log.md)
-- [Retrospective](docs/sprint1_retrospective.md)
+*We followed an agile methodology, documenting every step through activity logs and retrospectives.*
 
-**Sprint 2**
-- [Activity Log](docs/sprint2_activity_log.md)
-- [Retrospective](docs/sprint2_retrospective.md)
+| Sprint | Activity Logs | Retrospectives |
+| :--- | :--- | :--- |
+| **Sprint 1** | [📄 View Log](docs/sprint1_activity_log.md) | [🔄 View Retro](docs/sprint1_retrospective.md) |
+| **Sprint 2** | [📄 View Log](docs/sprint2_activity_log.md) | [🔄 View Retro](docs/sprint2_retrospective.md) |
+| **Sprint 3** | [📄 View Log](docs/sprint3_activity_log.md) | [🔄 View Retro](docs/sprint3_retrospective.md) |
+| **Sprint 4** | [📄 View Log](docs/sprint4_activity_log.md) | [🔄 View Retro](docs/sprint4_retrospective.md) |
 
-**Sprint 3**
-- [Activity Log](docs/sprint3_activity_log.md)
-- [Retrospective](docs/sprint3_retrospective.md)
+---
 
-**Sprint 4**
-- [Activity Log](docs/sprint4_activity_log.md)
-- [Retrospective](docs/sprint4_retrospective.md)
-
-**Sources**
-- [Sources & AI usage](docs/foodhub_sources.pdf)
+### 📚 Resources & Transparency
+> [!TIP]
+> **Sources & AI Usage:** You can find our detailed documentation on tools, sources, and AI-assisted development here: [**FoodHub Sources PDF**](docs/foodhub_sources.pdf)
