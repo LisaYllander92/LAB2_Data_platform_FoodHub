@@ -39,9 +39,7 @@ def log_search_query(query: str) -> None:
 
     with pool.connection() as conn:
         with conn.cursor() as cur:
-            for term in terms:
-                print(f"Save search in search_log: {term}")
-                cur.execute("INSERT INTO search_log (query) VALUES (%s)", (term,))
+                cur.executemany("INSERT INTO search_log (query) VALUES (%s)", [(term,) for term in terms])
         conn.commit()
 
 

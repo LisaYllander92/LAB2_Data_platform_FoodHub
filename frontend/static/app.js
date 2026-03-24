@@ -209,6 +209,7 @@ function switchTab(name, btn) {
   btn.classList.add('active');
   document.getElementById('tab-' + name).classList.add('active');
   if (name === 'history') loadHistory();
+  if (name === 'stats') loadStats();
 }
 
 
@@ -264,4 +265,108 @@ function renderDetail(r) {
 function closeDetail() {
   document.getElementById('tab-detail').classList.remove('active');
   document.getElementById('tab-search').classList.add('active');
+}
+
+async function loadStats() {
+  const el = document.getElementById('stats-content');
+  el.innerHTML = loadingHTML();
+
+  try {
+    const res = await fetch(`${API}/recipes/stats`);
+    if (!res.ok) throw new Error(`Fel ${res.status}`);
+    const data = await res.json();
+    renderStats(data);
+  } catch (e) {
+    el.innerHTML = `<div class="error">${e.message}</div>`;
+  }
+}
+
+function renderStats(data) {
+  const el = document.getElementById('stats-content');
+
+  el.innerHTML = `
+    <div class="stats-cards">
+      <div class="stat-card">
+        <div class="stat-value">${data.total_recipes}</div>
+        <div class="stat-label">Recept i databasen</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">${data.total_searches}</div>
+        <div class="stat-label">Sökningar totalt</div>
+      </div>
+    </div>
+
+    <div class="section-label" style="margin:18px 0 10px">Populära ingredienser</div>
+    <canvas id="popular-chart" width="400" height="220"></canvas>
+    <div id="chart-legend"></div>
+
+    <div class="section-label" style="margin:20px 0 10px">Detaljerad graf</div>
+    <img src="${API}/recipes/stats/plot" alt="Populära sökningar"
+         style="width:100%; border-radius:var(--r-lg); border:0.5px solid var(--border);"
+         onerror="this.style.display='none'" />
+
+    <div class="section-label" style="margin:20px 0 10px">Senast visade recept</div>
+    ${data.recent.map(r => `
+      <div class="history-item" onclick="openRecipe(this.dataset.title)" data-title="${r.title.replace(/"/g, '&quot;')}">
+        <div class="hi-left">
+          <div class="hi-icon">${emojiFor(r.title)}</div>
+          <div><div class="hi-title">${r.title}</div></div>
+        </div>
+        <div class="hi-arrow">›</div>
+      </div>`).join('')}
+  `;
+
+  // Wait for DOM to render before drawing on canvas
+  setTimeout(() => drawPieChart('popular-chart', data.popular), 0);
+}
+
+function drawPieChart(canvasId, data) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const total = data.reduce((sum, d) => sum + d.count, 0);
+
+  const colors = [
+    '#F07820','#D4661A','#F9BB8A','#1D9E75','#9FE1CB',
+    '#0F6E56','#EF9F27','#E24B4A','#6b6b6b','#085041'
+  ];
+
+  const cx = canvas.width / 2;
+  const cy = canvas.height / 2;
+  const r = Math.min(cx, cy) - 10;
+  let angle = -Math.PI / 2;
+
+  data.forEach((d, i) => {
+    const slice = (d.count / total) * 2 * Math.PI;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, r, angle, angle + slice);
+    ctx.closePath();
+    ctx.fillStyle = colors[i % colors.length];
+    ctx.fill();
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    const midAngle = angle + slice / 2;
+    const lx = cx + (r * 0.65) * Math.cos(midAngle);
+    const ly = cy + (r * 0.65) * Math.sin(midAngle);
+    ctx.fillStyle = '#fff';
+    ctx.font = '500 11px DM Sans, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(d.query, lx, ly);
+
+    angle += slice;
+  });
+
+  // Legend in separate div so it doesn't interfere with canvas
+  document.getElementById('chart-legend').innerHTML = `
+    <div class="chart-legend">
+      ${data.map((d, i) => `
+        <div class="legend-item">
+          <span class="legend-dot" style="background:${colors[i % colors.length]}"></span>
+          ${d.query} (${d.count})
+        </div>`).join('')}
+    </div>`;
 }
