@@ -6,7 +6,6 @@ the Spoonacular API to minimize token usage and API costs.
 import json
 import pandas as pd
 from rapidfuzz import fuzz
-
 from app.clients.spoonacular_client import search_recipes, get_recipe_information
 from app.repositories import recipe_repository
 from app.transformers.recipe_transformers import transform_recipe
@@ -37,12 +36,12 @@ async def search_pipeline(query: str, number: int, offset: int):
         cached = []
         for row in all_rows:
             ing_list = json.loads(row[6]) if row[6] else []
-            # Check if all fuzzy-search hits any ingredients
-            all_terms_match = any(
+            # Fallback: fuzzy match against all cached rows if exact ILIKE query returned nothing
+            any_terms_match = any(
                 any(fuzz.partial_ratio(term, ing) >= 80 for ing in ing_list)
                 for term in search_terms
             )
-            if all_terms_match:
+            if any_terms_match:
                 cached.append(row)
         cached = cached[:number]
 
@@ -69,7 +68,7 @@ async def search_pipeline(query: str, number: int, offset: int):
         if "ingredients_normalized" in df.columns:
             df["ingredients"] = df["ingredients_normalized"]
 
-        matches = has_ingredient(query, df, save=False)
+        matches = has_ingredient(query, df)
         return {
             "recipes": matches.to_dict(orient="records"),
             "totalResults": len(recipes),

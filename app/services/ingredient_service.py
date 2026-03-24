@@ -58,10 +58,6 @@ def has_ingredient(search: str, df: pd.DataFrame = None, save: bool = True) -> p
     Returns:
         pd.DataFrame: A DataFrame containing only the matching recipes.
     """
-    loaded_from_disk = df is None
-
-    if loaded_from_disk:
-        df = pd.read_json(BASE_DIR / "data" / "cleaning_recipe.json")
 
     search_terms = [s.strip() for s in search.replace(",", " ").split()]
 
@@ -73,10 +69,5 @@ def has_ingredient(search: str, df: pd.DataFrame = None, save: bool = True) -> p
     # Filter out recipes with 0 matches and sort by most matches first
     matches = df[df["match_count"] > 0].sort_values("match_count", ascending=False)
     matches = matches.drop(columns=["match_count"])
-
-    if save and loaded_from_disk:
-        output_path = BASE_DIR / "data" / "filtered" / "search_recipe.json"
-        output_path.parent.mkdir(parents=True, exist_ok=True)
-        matches.to_json(output_path, orient="records", indent=2)
 
     return matches

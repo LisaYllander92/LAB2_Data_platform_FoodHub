@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt
 import io
-#import seaborn as sns
 from app.repositories import recipe_repository
 
 def plot_popular_searches() -> bytes:
@@ -14,7 +13,7 @@ def plot_popular_searches() -> bytes:
     counts = [d["count"] for d in data]
 
     fig, ax = plt.subplots(figsize=(10, 5))
-    ax.bar(queries, counts, color="blue")
+    ax.bar(queries, counts, color="orange")
     ax.set_ylabel("Number of searches")
     ax.set_xlabel("Ingredients")
     ax.set_title("Most popular searches")

@@ -51,3 +51,23 @@
 | Team             | Confirmed statistics functionality and database table are working |
 
 ---
+
+## March 24 – Daily Standup (Tuesday)
+
+---
+
+## Team Activities
+| Who            | Activity |
+|----------------|----------|
+| Lisa           | Updated README |
+| Anton          | Completed frontend including bar charts |
+| Rickard        | Created REQUIREMENTS.md |
+| Filippa (Team) | Working on PowerPoint for final presentation |
+| Team           | Full code review — removed dead code, unused imports, and inconsistent comments|
+
+---
+
+## Current Status
+* All core features complete and verified.
+* Documentation updated (README, REQUIREMENTS.md, activity log).
+* Final presentation in progress.

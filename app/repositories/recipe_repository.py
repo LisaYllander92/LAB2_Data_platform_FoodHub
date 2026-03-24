@@ -1,7 +1,10 @@
+"""Database access functions for retrieving and storing recipes and search statistics."""
 import json
 from app.database import pool
 
+
 def get_cached_by_terms(search_terms: list[str], limit: int):
+    """Query curated_recipes for rows where ingredients_normalized matches any search term."""
     conditions = " OR ".join(
         ["ingredients_normalized::text ILIKE %s"] * len(search_terms)
     )
@@ -18,7 +21,9 @@ def get_cached_by_terms(search_terms: list[str], limit: int):
             """, params)
             return cur.fetchall()
 
+
 def get_all_cached():
+    """Return all rows from curated_recipes that have normalized ingredients."""
     with pool.connection() as conn:
         with conn.cursor() as cur:
             cur.execute("""
@@ -29,7 +34,9 @@ def get_all_cached():
             """)
             return cur.fetchall()
 
+
 def save_recipe(recipe: dict):
+    """Insert a recipe into curated_recipes, skipping duplicates by title."""
     with pool.connection() as conn:
         conn.execute("""
             INSERT INTO curated_recipes
@@ -47,7 +54,9 @@ def save_recipe(recipe: dict):
             json.dumps(recipe.get("ingredients_normalized", []))
         ))
 
+
 def get_history(limit: int):
+    """Return the most recently added recipes from curated_recipes."""
     with pool.connection() as conn:
         with conn.cursor() as cur:
             cur.execute("""
@@ -58,7 +67,9 @@ def get_history(limit: int):
             """, (limit,))
             return cur.fetchall()
 
+
 def get_by_title(title: str):
+    """Return a single recipe from curated_recipes matching the given title (case-insensitive)."""
     with pool.connection() as conn:
         with conn.cursor() as cur:
             cur.execute("""
@@ -70,8 +81,8 @@ def get_by_title(title: str):
             return cur.fetchone()
 
 
-#@router.get("/recipes/popular-searches")
 def get_popular_searches():
+    """Return the top 10 most frequently searched queries from search_log."""
     with pool.connection() as conn:
         with conn.cursor() as cur:
             cur.execute("""
@@ -83,7 +94,10 @@ def get_popular_searches():
             """)
             rows = cur.fetchall()
     return [{"query": row[0], "count": row[1]} for row in rows]
+
+
 def mark_viewed(title: str):
+    """Update last_viewed_at timestamp for a recipe when it is opened by a user."""
     with pool.connection() as conn:
         conn.execute("""
             UPDATE curated_recipes
@@ -93,6 +107,7 @@ def mark_viewed(title: str):
 
 
 def get_stats():
+    """Return aggregated statistics including popular searches, recently viewed recipes, and totals."""
     with pool.connection() as conn:
         with conn.cursor() as cur:
             # Popular searches
@@ -105,7 +120,7 @@ def get_stats():
             """)
             popular = [{"query": row[0], "count": row[1]} for row in cur.fetchall()]
 
-            # Most viewed recipes
+            # Most recently viewed recipes
             cur.execute("""
                 SELECT title, cooking_minutes, servings
                 FROM curated_recipes
@@ -128,3 +143,15 @@ def get_stats():
         "total_recipes": total_recipes,
         "total_searches": total_searches
     }
+
+def log_search_query(query: str) -> None:
+    """Split the query into individual terms and insert each into search_log."""
+    terms = [t.strip().lower() for t in query.replace(",", " ").split() if t.strip()]
+
+    if not terms:
+        return
+
+    with pool.connection() as conn:
+        with conn.cursor() as cur:
+            cur.executemany("INSERT INTO search_log (query) VALUES (%s)", [(term,) for term in terms])
+        conn.commit()
