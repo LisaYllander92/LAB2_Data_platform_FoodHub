@@ -144,28 +144,15 @@ def get_stats():
         "total_searches": total_searches
     }
 
-""" def log_search_query(query: str) -> None:
-   # Split the query into individual terms and insert each into search_log.
-    terms = [t.strip().lower() for t in query.replace(",", " ").split() if t.strip()]
-
-    if not terms:
-        return
-
-    with pool.connection() as conn:
-        with conn.cursor() as cur:
-            cur.executemany("INSERT INTO search_log (query) VALUES (%s)", [(term,) for term in terms])
-        conn.commit()"""
 
 def log_search_query(query: str):
-    """Loggar söktermer för statistik."""
+    """Search log for statistics"""
     terms = [t.strip() for t in query.split(",") if t.strip()]
     if not terms:
         return
 
     with pool.connection() as conn:
         with conn.cursor() as cur:
-            # Vi kör en vanlig loop istället för executemany
-            # för att undvika DuplicatePreparedStatement-felet.
             for term in terms:
                 cur.execute(
                     "INSERT INTO search_log (query) VALUES (%s)",
