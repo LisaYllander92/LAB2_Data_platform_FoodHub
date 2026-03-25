@@ -1,5 +1,5 @@
 # Sprint 4 – Activity Log
-**March 22–27, 2026**
+**March 22–25, 2026**
 
 ---
 
@@ -67,9 +67,22 @@
 
 ---
 
+## March 25 – Final Daily Standup (Wednesday)
+
+---
+
+## Team Activities
+| Who            | Activity |
+|----------------|----------|
+| Lisa           | Updated README |
+| Filippa (Team) | Finished PowerPoint for final presentation |
+| Anton, Lisa (Team)| Small bug fix |
+
+---
+
 ## Current Status
 * All core features complete and verified.
 * Documentation updated (README, REQUIREMENTS.md, activity log).
-* Final presentation in progress.
+* Final project presentation prepared.
 
 [⬅ Back to Main README](../README.md)
