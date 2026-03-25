@@ -147,7 +147,7 @@ def get_stats():
 
 def log_search_query(query: str):
     """Search log for statistics"""
-    terms = [t.strip() for t in query.split(",") if t.strip()]
+    terms = [t.strip().lower() for t in query.replace(",", " ").split() if t.strip()]
     if not terms:
         return
 
@@ -157,5 +157,6 @@ def log_search_query(query: str):
                 cur.execute(
                     "INSERT INTO search_log (query) VALUES (%s)",
                     (term,),
-                    prepare = False
+                    prepare=False
                 )
+        conn.commit()
