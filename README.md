@@ -75,8 +75,18 @@ Data is persisted into three distinct functional layers within **Supabase** to s
 * **`curated_recipes` (Validated Data):** Holds cleaned, structured, and validated recipe data, optimized for frontend performance.
 * **`search_log` (Analytics):** Logs user search queries (ingredients) to provide the data source for search frequency statistics.
 
-### 5. **Data Transformation**
-Throughout the flow, **Pandas** is used to clean, filter, and validate the data, ensuring that only high-quality, structured information moves from the staging area to the curated layer.
+### 5. **ETL Pipeline**
+Throughout the flow, data moves through a classic **Extract → Transform → Load** process:
+
+* **Extract:** Raw recipe data is fetched from the **Spoonacular API** via `get_recipe_information()`, returned as JSON with camelCase fields that may contain `NaN` values and HTML-tagged instructions.
+* **Transform:** Data is cleaned and normalized in `recipe_transformers.py` and `ingredient_service.py`:
+  * `clean_numeric()` replaces `NaN`/`Inf` with valid defaults
+  * camelCase fields are converted to snake_case (e.g. `readyInMinutes` → `ready_in_minutes`)
+  * HTML tags are stripped from instructions using **Regex**
+  * Ingredients are normalized to lowercase for fuzzy matching
+* **Load:** Cleaned data is persisted into two layers following a **Medallion Architecture**:
+  * `staging_recipes` — raw JSON payloads for auditing (via Kafka Consumer)
+  * `curated_recipes` — validated, structured data ready for the frontend
 
 ---
 
