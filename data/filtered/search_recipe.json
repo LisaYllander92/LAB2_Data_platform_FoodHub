@@ -1,7 +1,7 @@
 [
   {
     "id":3,
-    "title":"Veggie Tacos ",
+    "title":"Veggie Tacos",
     "image":"https:\/\/example.com\/tacos.png",
     "cooking_minutes":20,
     "ingredients":[
@@ -14,10 +14,10 @@
       "avocado"
     ],
     "servings":4,
-    "instructions":"Heat beans. Fill taco shells with beans and vegetables. ",
+    "instructions":"Heat beans. Fill taco shells with beans and vegetables.",
     "allergies":[
-      "dairy",
-      "gluten"
+      "gluten",
+      "dairy"
     ]
   }
 ]

@@ -1,38 +1,53 @@
-import json
+"""Main FastAPI application entry point for the FoodHub API.
+
+Initializes the application, registers routers for specific API endpoints,
+and sets up global exception handling.
+"""
 import os
-from contextlib import asynccontextmanager
-from fastapi import FastAPI
-from kafka import KafkaProducer
-from psycopg_pool import ConnectionPool
+import traceback
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse, HTMLResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
+from app.api.recipe_routes import router as recipe_router
 from pathlib import Path
-import pandas as pd
-from app.producer import send_recipes
-from app.services.recipe_service import has_ingredient
-from psycopg.rows import dict_row
 
-"""####### dev search ######## - for now"""
-matches = has_ingredient("avocado")
-
-
-DB_USER = os.getenv("DB_USER")
-DB_PASSWORD = os.getenv("DB_PASSWORD")
-DB_HOST = os.getenv("DB_HOST")
-DB_PORT = os.getenv("DB_PORT")
-DB_NAME = os.getenv("DB_NAME")
+ROOT_DIR = Path(__file__).resolve().parent.parent
+FRONTEND_DIR = ROOT_DIR / "frontend"
 KAFKA_BOOTSTRAP_SERVERS = os.getenv("KAFKA_BOOTSTRAP_SERVERS", "kafka:9092")
-
-DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
-
-pool = ConnectionPool(DATABASE_URL)
 
 app = FastAPI(title="FoodHub API")
 
-@app.get("/")
-def read_root():
+app.mount("/static", StaticFiles(directory=FRONTEND_DIR / "static"), name="static")
+app.mount("/images", StaticFiles(directory=ROOT_DIR / "images"), name="images")
+templates = Jinja2Templates(directory=FRONTEND_DIR / "templates")
+
+app.include_router(recipe_router, prefix="/api")
+
+
+@app.get("/", response_class=HTMLResponse)
+def serve_frontend(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
+
+
+@app.get("/health")
+def health():
+    """Health check endpoint to verify that the API is up and running."""
     return {"message": "FoodHub is running"}
 
-@app.get("/recipes/search")
-def search_by_ingredient(ingredient: str):
-    matches = has_ingredient(ingredient)
-    send_recipes(ingredient)
-    return matches.to_dict(orient="records")
+
+@app.exception_handler(Exception)
+async def generic_exception_handler(request: Request, exc: Exception):
+    """Global exception handler to return formatted JSON responses.
+
+    Args:
+        request (Request): The incoming HTTP request.
+        exc (Exception): The unhandled exception that was raised.
+
+    Returns:
+        JSONResponse: A 500 error response containing the error details and traceback.
+    """
+    return JSONResponse(
+        status_code=500,
+        content={"detail": str(exc), "traceback": traceback.format_exc()}
+    )

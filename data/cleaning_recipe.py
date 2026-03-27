@@ -1,64 +1,80 @@
-import json 
+"""Data cleaning pipeline for raw recipe JSON files.
+
+Loads raw recipe data using pandas, standardizes text fields, handles missing 
+numeric values, and exports a cleaned JSON file ready for database ingestion.
+"""
+import json
 import pandas as pd
 
-with open("recipes_raw.json") as f: 
-    data = json.load(f).copy()
 
-recipes_df = pd.DataFrame(data)
-print("=== RAW DATA ===")
-print(recipes_df)
-print("\nDtypes:")
-print(recipes_df.dtypes)
+def capitalize_sentences(text: str) -> str:
+    """Capitalize the first letter of each sentence in a text block.
 
-####### Title #######
-recipes_df["title"] = recipes_df["title"].str.replace(r"\s+", " ", regex=True).str.title()
+    Args:
+        text (str): The raw instruction text.
 
-###### Cooking time #######
-recipes_df["cooking_minutes"] = pd.to_numeric(recipes_df["cooking_minutes"], errors="coerce")
-recipes_df["cooking_minutes"] = recipes_df["cooking_minutes"].fillna(0).astype(int) # Todo: filter later - "missing value"
+    Returns:
+        str: The correctly capitalized text.
+    """
+    if not isinstance(text, str):
+        return text
 
-####### Servings ########
-recipes_df["servings"] = pd.to_numeric(recipes_df["servings"], errors="coerce")
-recipes_df["servings"] = recipes_df["servings"].fillna(0).astype(int) # Todo: filter later - "missing value"
-
-####### image #######
-print(recipes_df["image"])
-recipes_df["image"] = recipes_df["image"].replace("", None)
-print(recipes_df["image"])
-
-####### Ingredients #######
-print(recipes_df["ingredients"])
-recipes_df["ingredients"] = {
-    index: [i.strip() for i in ingredients]
-    for index, ingredients in recipes_df["ingredients"].items()
-    if isinstance(ingredients, list)
-        }
-
-cleaned = []
-
-for items in recipes_df["ingredients"]:       # loop over each cell
-    if isinstance(items, list):
-        stripped = []
-        for i in items:                        # loop over each ingredient
-            stripped.append(i.strip().lower())
-        cleaned.append(stripped)
-    else:
-        cleaned.append(items)                  # not a list, keep as-is
-recipes_df["ingredients"] = cleaned
-
-print(recipes_df["ingredients"]) # Todo: check charset for whitespace after number
-
-
-####### Instructions ########
-def capitalize_sentences(text):
     sentences = text.split(". ")
     sentences = [s.capitalize() for s in sentences]
     return ". ".join(sentences)
-recipes_df["instructions"] = recipes_df["instructions"].str.replace(r"\.\s*", ". ", regex=True)
-recipes_df["instructions"] = recipes_df["instructions"].apply(capitalize_sentences)
-
-####### Allergies #######
-recipes_df["allergies"] = recipes_df["allergies"].apply(lambda x: list(set(i.lower().strip() for i in x))if isinstance(x, list) else x)
 
 
-recipes_df.to_json("cleaning_recipe.json", orient= "records", indent=2)
+def process_recipe_data(input_path: str = "recipes_raw.json", output_path: str = "cleaning_recipe.json"):
+    """Load, clean, and export the recipe dataset.
+
+    Args:
+        input_path (str): File path to the raw JSON data.
+        output_path (str): File path for the cleaned JSON output.
+    """
+    with open(input_path) as f:
+        data = json.load(f).copy()
+
+    recipes_df = pd.DataFrame(data)
+
+    print("=== RAW DATA ===")
+    print(recipes_df)
+    print("\nDtypes:")
+    print(recipes_df.dtypes)
+
+    # Title
+    recipes_df["title"] = recipes_df["title"].str.replace(r"\s+", " ", regex=True).str.strip().str.title()
+
+    # Cooking time
+    recipes_df["cooking_minutes"] = pd.to_numeric(recipes_df["cooking_minutes"], errors="coerce").fillna(0).astype(int)
+
+    # Servings
+    recipes_df["servings"] = pd.to_numeric(recipes_df["servings"], errors="coerce").fillna(0).astype(int)
+
+    # Image
+    recipes_df["image"] = recipes_df["image"].replace("", None)
+
+    # Ingredients
+    cleaned_ingredients = []
+    for items in recipes_df["ingredients"]:
+        if isinstance(items, list):
+            cleaned_ingredients.append([i.strip().lower() for i in items])
+        else:
+            cleaned_ingredients.append(items)
+
+    recipes_df["ingredients"] = cleaned_ingredients
+
+    # Instructions
+    recipes_df["instructions"] = recipes_df["instructions"].str.replace(r"\.\s*", ". ", regex=True)
+    recipes_df["instructions"] = recipes_df["instructions"].apply(capitalize_sentences).str.strip()
+
+    # Allergies
+    recipes_df["allergies"] = recipes_df["allergies"].apply(
+        lambda x: list(set(i.lower().strip() for i in x)) if isinstance(x, list) else x
+    )
+
+    recipes_df.to_json(output_path, orient="records", indent=2)
+    print(f"\nCleaned data saved to {output_path}")
+
+
+if __name__ == "__main__":
+    process_recipe_data()
