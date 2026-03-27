@@ -28,4 +28,9 @@
 The team has developed a solid understanding of Scrum roles and agile workflows. 
 The experience has laid a strong foundation for future sprints and projects.
 
+## Team Notes
+- Filippa was occupied with a course completion (Datamodeling) during the first two weeks 
+  of the sprint, which affected task distribution. This was known and handled 
+  by the team through task redistribution.
+
 [⬅ Back to Main README](../README.md)
